@@ -11,8 +11,6 @@
             --sidebar-color: #0057ff;
             --sidebar-foldBtn: #ababad;
             --sidebar-split: #e2e3e5;
-            --sidebar-footer-bkg: #ffffff;
-            --sidebar-footer-border: #e9eaeb;
         }
 
         .sidebar {
@@ -33,7 +31,8 @@
             border-color: transparent;
             border-radius: 15px;
             box-sizing: border-box;
-            margin: 0 10px;
+            margin: 6px 10px;
+            cursor: pointer;
         }
 
         .sidebar div span {
@@ -42,36 +41,29 @@
             padding-left: 13px;
         }
 
-        .sidebar div:not(:first-child):not(#sidebarFooter):hover {
-            cursor: pointer;
+        #newDialog {
             background-color: var(--sidebar-line-bkg);
             border-color: var(--sidebar-line-border);
             color: var(--sidebar-color);
         }
 
-        .sidebar div:not(:first-child):not(#sidebarFooter) span img,
-        #sidebarFooter span img {
+        .sidebar div:not(:first-child):not(#newDialog):hover,
+        #sidebarFoldBtn:hover {
+            background-color: #e9eaec;
+        }
+
+        .sidebar div:not(:first-child) span img {
             height: 20px;
             width: 20px;
             float: left;
             margin: 13px 5px 13px 0;
         }
 
-        .sidebar div:not(:first-child):not(#sidebarFooter):hover span img {
-            transform: translateX(-80px);
-            filter: drop-shadow(var(--sidebar-color) 80px 0);
-        }
-
-        .sidebar div:not(:first-child):not(#sidebarFooter) img {
+        .sidebar div:not(:first-child) img {
             height: 20px;
             width: 20px;
             float: right;
             margin: 13px 13px 13px 0;
-        }
-
-        .sidebar div:not(:first-child):not(#sidebarFooter):hover img {
-            transform: translateX(-400px);
-            filter: drop-shadow(var(--sidebar-color) 400px 0);
         }
 
         #sidebarFoldBtn {
@@ -83,54 +75,12 @@
             box-sizing: border-box;
         }
 
-        #sidebarFoldBtn:hover {
-            background-color: var(--sidebar-line-bkg);
-            cursor: pointer;
-            border-color: var(--sidebar-line-border);
-        }
-
         #sidebarSplit {
             border: none;
             height: 2px;
             background-color: var(--sidebar-split);
             margin: 5px 10px;
             cursor: default;
-        }
-
-        #sidebarFooter {
-            position: absolute;
-            bottom: 10px;
-            background-color: var(--sidebar-footer-bkg);
-            border-color: var(--sidebar-footer-border);
-        }
-
-        #sidebarFooterClose {
-            height: 20px;
-            width: 20px;
-            float: right;
-            padding: 13px 13px 13px 14px;
-            border-radius: 0 13px 13px 0;
-        }
-
-        #sidebarFooterClose:hover {
-            background-color: red;
-        }
-
-        #sidebarDlBtn {
-
-            border-radius: 13px 0 0 13px;
-        }
-
-        #sidebarDlBtn:hover {
-            cursor: pointer;
-            background-color: var(--sidebar-line-bkg);
-            border-color: var(--sidebar-line-border);
-            color: var(--sidebar-color);
-        }
-
-        #sidebarDlBtn:hover img {
-            transform: translateX(-80px);
-            filter: drop-shadow(var(--sidebar-color) 80px 0);
         }
     </style>
 </head>
@@ -139,13 +89,12 @@
     <!--侧栏-->
     <div class="sidebar">
         <div>
-            <span style="padding-left:3px;"><img src="/img/user.png"
-                    style="height:36px;width:36px;float:left;margin:5px 10px 5px 0;border-radius: 100%;"
-                    alt="用户头像" />你们的饺子</span>
+            <span style="padding-left:3px;"><img src="/svg/AI.svg"
+                    style="height:36px;width:36px;float:left;margin:5px 10px 5px 0;border-radius: 100%;" /><b>AI秘书</b></span>
             <img id="sidebarFoldBtn" src="/svg/LeftSidebar.svg" style="height:40px;width:40px;margin:5px 3px 5px 0;" />
         </div>
-        <div>
-            <span><img src="/svg/plus.svg" />新对话</span>
+        <div id="newDialog">
+            <span><img src="/svg/plus.svg" /><b>新对话</b></span>
         </div>
         <div>
             <span><img src="/svg/search.svg" />AI搜索</span>
@@ -171,22 +120,14 @@
         <div>
             <span><img src="/svg/bookmark.svg" />收藏夹</span>
         </div>
-        <div id="sidebarFooter">
-            <span id="sidebarDlBtn" style="padding-right:30px;"><img src="/svg/download.svg" />下载 Windows 客户端</span>
-            <img id="sidebarFooterClose" src="/svg/cross.svg" />
-        </div>
-
+    </div>
+    <!--主窗口-->
+    <div>
 
     </div>
     <script>
         document.getElementById("sidebarFoldBtn").addEventListener("click", () => {
             alert("收起按钮被点击！");
-        });
-        document.getElementById("sidebarDlBtn").addEventListener("click", () => {
-            alert("下载按钮被点击！");
-        });
-        document.getElementById("sidebarFooterClose").addEventListener("click", () => {
-            alert("关闭按钮被点击！");
         });
     </script>
 </body>
