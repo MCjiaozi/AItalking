@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>一个智能 AI 体！</title>
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 300px;
+            background-color: #f3f4f6;
+            /*transform: translateX(-250px);*/
+        }
+
+        .sidebar div {
+            width: 300px;
+            height: 50px;
+            /*background-color: blue;*/
+        }
+
+        .sidebar div span {
+            float: left;
+            line-height: 50px;
+            padding-left: 20px;
+        }
+
+        #foldBtn {
+            float: right;
+            padding-right: 20px;
+        }
+
+        .sidebar div:hover {
+            cursor: pointer;
+            background-color: #e5ebf7;
+        }
+    </style>
+</head>
+
+<body>
+    <!--侧栏-->
+    <div class="sidebar">
+        <!--用户头像昵称-->
+        <div>
+            <span>豆包</span>
+            <span id="foldBtn">收起</span>
+        </div>
+        <div>
+            <span>新对话</span>
+        </div>
+        <div>
+            <span>AI搜索</span>
+        </div>
+        <div>
+            <span>帮我写作</span>
+        </div>
+        <div>
+            <span>图像生成</span>
+        </div>
+
+    </div>
+    <script>
+        document.getElementById("foldBtn").addEventListener("click", () => {
+            alert("收起按钮被点击！");
+        });
+    </script>
+</body>
+
+</html>
