@@ -7,12 +7,13 @@
         :root {
             --sidebar-bkg: #f3f4f6;
             --sidebar-line-bkg: #e5ebf7;
-            --sidebar-line-border: #dae5f7;
+            --sidebar-line-border: #bad2f8;
             --sidebar-color: #0057ff;
             --sidebar-foldBtn: #ababad;
             --sidebar-split: #e2e3e5;
         }
 
+        /*侧栏*/
         .sidebar {
             position: fixed;
             top: 0;
@@ -21,13 +22,14 @@
             width: 300px;
             background-color: var(--sidebar-bkg);
             font-size: 16px;
+            transition: all 1s;
         }
 
         .sidebar div {
             width: 280px;
             height: 50px;
             border-style: solid;
-            border-width: 2px;
+            border-width: 1px;
             border-color: transparent;
             border-radius: 15px;
             box-sizing: border-box;
@@ -38,13 +40,17 @@
         .sidebar div span {
             float: left;
             line-height: 46px;
-            padding-left: 13px;
+            padding-left: 12px;
         }
 
         #newDialog {
             background-color: var(--sidebar-line-bkg);
             border-color: var(--sidebar-line-border);
             color: var(--sidebar-color);
+        }
+
+        #newDialog:hover {
+            background-color: #dae4f7;
         }
 
         .sidebar div:not(:first-child):not(#newDialog):hover,
@@ -56,14 +62,14 @@
             height: 20px;
             width: 20px;
             float: left;
-            margin: 13px 5px 13px 0;
+            margin: 14px 5px 14px 0;
         }
 
         .sidebar div:not(:first-child) img {
             height: 20px;
             width: 20px;
             float: right;
-            margin: 13px 13px 13px 0;
+            margin: 14px 12px 14px 0;
         }
 
         #sidebarFoldBtn {
@@ -81,6 +87,79 @@
             background-color: var(--sidebar-split);
             margin: 5px 10px;
             cursor: default;
+        }
+
+        /*主窗口*/
+        .main {
+            position: fixed;
+            top: 0;
+            left: 300px;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            transition: all 1s;
+        }
+
+        .centerBox {
+            text-align: left;
+            min-width: 800px;
+            height: 400px;
+            margin-top: 100px;
+            background-color: red;
+        }
+
+        .boxs div {
+            width: 400px;
+            height: 100px;
+            background-color: blue;
+        }
+
+        .boxLeft {
+            float: left;
+        }
+
+        .boxRight {
+            float: right;
+        }
+
+        @media screen and (min-width: 700px) and (max-width: 1100px) {
+            .centerBox {
+                min-width: 400px;
+            }
+
+            .boxs div {
+                width: 100%;
+            }
+
+            .boxRight {
+                float: left;
+            }
+        }
+
+        @media screen and (max-width: 700px) {
+            .centerBox {
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            .boxs div {
+                width: 100%;
+            }
+
+            .boxRight {
+                float: left;
+            }
+
+
+            .sidebar {
+                transform: translateX(-300px);
+            }
+
+            .main {
+                left: 0;
+            }
         }
     </style>
 </head>
@@ -122,12 +201,25 @@
         </div>
     </div>
     <!--主窗口-->
-    <div>
-
+    <div class="main">
+        <div class="centerBox">
+            <h1>你好，用户，<br>你的超级助手已上线！</h1>
+            <div class="boxs">
+                <div class="boxLeft">
+                    ABC
+                </div>
+                <div class="boxRight">
+                    DEF
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         document.getElementById("sidebarFoldBtn").addEventListener("click", () => {
             alert("收起按钮被点击！");
+        });
+        document.getElementById("newDialog").addEventListener("click", () => {
+            alert("新对话按钮被点击！");
         });
     </script>
 </body>
