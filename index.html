@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+<head lang="zh">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>一个智能 AI 体！</title>
     <style>
         :root {
             --sidebar-bkg: #f3f4f6;
-            --sidebar-line-bkg: #e5ebf7;
-            --sidebar-line-border: #bad2f8;
-            --sidebar-color: #0057ff;
-            --sidebar-foldBtn: #ababad;
+            --sidebar-newDialog-bkg: #e5ebf7;
+            --sidebar-newDialog-border: #c2d6f8;
+            --sidebar-newDialog-bkg-hover: #dae4f7;
+            --sidebar-newDialog-border-hover: #bad2f8;
+            --sidebar-newDialog-color: #0057ff;
+            --sidebar-bkg-hover: #e9eaec;
             --sidebar-split: #e2e3e5;
+
+            --centerBox-border: #e2e2e2;
+
+            --inputBox-border: #e5e5e5;
+            --inputBox-split: #ebebeb;
+            --inputBox-img-bkg-hover: #e9eaec;
+            --inputBox-sendBtn-bkg: #0066ff;
+            --inputBox-sendBtn-bkg-hover: #004ad9;
+            --inputBox-functionBox-border: #e0e0e0;
+            --inputBox-functionBox-color: #7f7f7f;
+            --inputBox-functionBox-border-hover: #d7d7d7;
+            --inputBox-functionBox-color-hover: #252525;
+            --inputBox-functionBox-bkg-hover: #f5f5f5;
         }
 
         /*侧栏*/
-        .sidebar {
+        #sidebar {
+            z-index: 10;
             position: fixed;
             top: 0;
             bottom: 0;
@@ -22,10 +40,10 @@
             width: 300px;
             background-color: var(--sidebar-bkg);
             font-size: 16px;
-            transition: all 1s;
+            transition: all .5s;
         }
 
-        .sidebar div {
+        #sidebar div {
             width: 280px;
             height: 50px;
             border-style: solid;
@@ -37,60 +55,78 @@
             cursor: pointer;
         }
 
-        .sidebar div span {
+        #sidebar div span {
             float: left;
             line-height: 46px;
             padding-left: 12px;
         }
 
         #newDialog {
-            background-color: var(--sidebar-line-bkg);
-            border-color: var(--sidebar-line-border);
-            color: var(--sidebar-color);
+            background-color: var(--sidebar-newDialog-bkg);
+            border-color: var(--sidebar-newDialog-border) !important;
+            color: var(--sidebar-newDialog-color);
         }
 
         #newDialog:hover {
-            background-color: #dae4f7;
+            background-color: var(--sidebar-newDialog-bkg-hover);
+            border-color: var(--sidebar-newDialog-border-hover) !important;
         }
 
-        .sidebar div:not(:first-child):not(#newDialog):hover,
+        #sidebar div:not(:first-child):not(#newDialog):hover,
         #sidebarFoldBtn:hover {
-            background-color: #e9eaec;
+            background-color: var(--sidebar-bkg-hover);
         }
 
-        .sidebar div:not(:first-child) span img {
+        #sidebar div:not(:first-child) span img {
             height: 20px;
             width: 20px;
             float: left;
             margin: 14px 5px 14px 0;
         }
 
-        .sidebar div:not(:first-child) img {
+        #sidebar div:not(:first-child) img {
             height: 20px;
             width: 20px;
             float: right;
             margin: 14px 12px 14px 0;
         }
 
+        #sidebar div:first-child {
+            cursor: default;
+        }
+
+        #sidebar div:first-child span img {
+            height: 36px;
+            width: 36px;
+            float: left;
+            margin: 5px 10px 5px 0;
+            border-radius: 100%;
+        }
+
         #sidebarFoldBtn {
             float: right;
             border-radius: 100%;
             border-style: solid;
-            border-width: 2px;
+            border-width: 1px;
             border-color: transparent;
             box-sizing: border-box;
+            border-radius: 10px;
+            height: 40px;
+            width: 40px;
+            margin: 5px 3px 5px 0;
+            cursor: pointer;
         }
 
         #sidebarSplit {
-            border: none;
-            height: 2px;
-            background-color: var(--sidebar-split);
-            margin: 5px 10px;
-            cursor: default;
+            border: none !important;
+            height: 2px !important;
+            background-color: var(--sidebar-split) !important;
+            margin: 5px 10px !important;
+            cursor: default !important;
         }
 
         /*主窗口*/
-        .main {
+        #main {
             position: fixed;
             top: 0;
             left: 300px;
@@ -98,67 +134,256 @@
             bottom: 0;
             display: flex;
             justify-content: center;
-            transition: all 1s;
+            transition: all .5s;
         }
 
-        .centerBox {
-            text-align: left;
-            min-width: 800px;
-            height: 400px;
+        /*主窗口 - centerBox*/
+        #centerBox {
+            max-width: 800px;
             margin-top: 100px;
-            background-color: red;
+            max-height: 500px;
+            width: 90%;
         }
 
-        .boxs div {
-            width: 400px;
+        /*行*/
+        #boxs div {
+            width: 100%;
             height: 100px;
-            background-color: blue;
+            margin: 0 0 10px 0;
         }
 
-        .boxLeft {
+        /*列*/
+        #boxs div div {
+            height: 100%;
+            width: 50%;
+            float: left;
+            position: relative;
+        }
+
+        /*框*/
+        #boxs div div div {
+            all: unset;
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            top: 0;
+            bottom: 0;
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--centerBox-border);
+            border-radius: 15px;
+            box-sizing: border-box;
+            cursor: pointer;
             float: left;
         }
 
-        .boxRight {
-            float: right;
+        #boxs div div div:hover {
+            box-shadow: 0px 5px 10px 0 var(--centerBox-border);
         }
 
-        @media screen and (min-width: 700px) and (max-width: 1100px) {
-            .centerBox {
-                min-width: 400px;
-            }
-
-            .boxs div {
-                width: 100%;
-            }
-
-            .boxRight {
-                float: left;
-            }
+        /*框内元素*/
+        #boxs div div div img {
+            height: 20px;
+            width: 20px;
+            float: left;
+            padding: 15px 10px 15px 20px;
         }
 
-        @media screen and (max-width: 700px) {
-            .centerBox {
-                position: absolute;
-                left: 0;
-                right: 0;
-            }
+        #boxs div div div div {
+            all: unset;
+            display: block;
+        }
 
-            .boxs div {
-                width: 100%;
-            }
+        #boxs div div div div:hover {
+            all: unset;
+            display: block;
+        }
 
-            .boxRight {
-                float: left;
-            }
+        #boxs div div div div:nth-of-type(1) {
+            line-height: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            height: 50px;
+        }
 
+        #boxs div div div div:nth-of-type(2) {
+            line-height: 20px;
+            font-size: 16px;
+            height: 20px;
+            margin-left: 50px;
+        }
 
-            .sidebar {
+        /*主窗口 - chatbox*/
+        #chatbox {
+            position: absolute;
+            bottom: 0;
+            height: 150px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        #inputBox {
+            position: absolute;
+            bottom: 20px;
+            height: 60px;
+            width: 100%;
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--inputBox-border);
+            border-radius: 20px;
+            box-sizing: border-box;
+            box-shadow: 0px 5px 10px 0 var(--centerBox-border);
+        }
+
+        #inputBox div img {
+            height: 30px;
+            width: 30px;
+            border-style: solid;
+            border-width: 1px;
+            border-color: transparent;
+            border-radius: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+            margin: 15px 0 15px 0;
+        }
+
+        #inputBox div img:hover {
+            background-color: var(--inputBox-img-bkg-hover);
+        }
+
+        .inputBoxLeft {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            right: 140px;
+        }
+
+        #typeBox {
+            resize: none;
+            outline: none;
+            height: 24px;
+            position: absolute;
+            top: 18px;
+            bottom: 18px;
+            left: 45px;
+            right: 0;
+            font-size: 16px;
+            font-family: sans-serif;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+
+        .inputBoxRight {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 10px;
+            width: 120px;
+        }
+
+        .inputBoxRight div {
+            all: unset;
+            float: left;
+        }
+
+        #inputBoxSplit {
+            width: 2px;
+            height: 20px;
+            background-color: var(--inputBox-split);
+            margin: 20px 10px;
+        }
+
+        #sendBtn {
+            background-color: var(--inputBox-sendBtn-bkg) !important;
+            border-radius: 100% !important;
+        }
+
+        #sendBtn:hover {
+            background-color: var(--inputBox-sendBtn-bkg-hover) !important;
+        }
+
+        #functionBox {
+            position: absolute;
+            bottom: 90px;
+            height: 36px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        #functionBox div {
+            height: 36px;
+            line-height: 36px;
+            float: left;
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--inputBox-functionBox-border);
+            border-radius: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+            margin: 0 0 0 10px;
+            padding: 0 10px;
+            color: var(--inputBox-functionBox-color);
+            font-size: 14px;
+        }
+
+        #functionBox div:hover {
+            border-color: var(--inputBox-functionBox-border-hover);
+            color: var(--inputBox-functionBox-color-hover);
+            background-color: var(--inputBox-functionBox-bkg-hover);
+            transition: all .5s;
+        }
+
+        #functionBox div svg {
+            width: 14px;
+            height: 14px;
+            margin: 11px 0;
+            float: left;
+            fill: var(--inputBox-functionBox-color);
+        }
+
+        #functionBox div:hover svg {
+            fill: var(--inputBox-functionBox-color-hover);
+            transition: all .5s;
+        }
+
+        /*展开侧栏按钮*/
+        #sidebarUnFoldBtn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border-radius: 100%;
+            border-style: solid;
+            border-width: 1px;
+            border-color: transparent;
+            box-sizing: border-box;
+            border-radius: 10px;
+            height: 40px;
+            width: 40px;
+            display: none;
+            cursor: pointer;
+        }
+
+        #sidebarUnFoldBtn:hover {
+            background-color: var(--sidebar-bkg-hover);
+        }
+
+        @media screen and (max-width: 800px) {
+            #sidebar {
                 transform: translateX(-300px);
             }
 
-            .main {
+            #main {
                 left: 0;
+            }
+
+            #sidebarFoldBtn {
+                display: none;
+            }
+
+            #sidebarUnFoldBtn {
+                display: unset;
             }
         }
     </style>
@@ -166,11 +391,12 @@
 
 <body>
     <!--侧栏-->
-    <div class="sidebar">
+    <div id="sidebar">
         <div>
-            <span style="padding-left:3px;"><img src="/svg/AI.svg"
-                    style="height:36px;width:36px;float:left;margin:5px 10px 5px 0;border-radius: 100%;" /><b>AI秘书</b></span>
-            <img id="sidebarFoldBtn" src="/svg/LeftSidebar.svg" style="height:40px;width:40px;margin:5px 3px 5px 0;" />
+            <span style="padding-left:3px;">
+                <img src="/svg/AI.svg" /><b>超级助手</b>
+            </span>
+            <img id="sidebarFoldBtn" src="/svg/LeftSidebar.svg" />
         </div>
         <div id="newDialog">
             <span><img src="/svg/plus.svg" /><b>新对话</b></span>
@@ -201,25 +427,237 @@
         </div>
     </div>
     <!--主窗口-->
-    <div class="main">
-        <div class="centerBox">
-            <h1>你好，用户，<br>你的超级助手已上线！</h1>
-            <div class="boxs">
-                <div class="boxLeft">
-                    ABC
+    <div id="main">
+        <div id="centerBox">
+            <h1 style="padding:0 20px;">你好，用户<br>你的超级助手已上线！</h1>
+            <div id="boxs">
+                <!--行-->
+                <div>
+                    <!--列-->
+                    <div>
+                        <!--框-->
+                        <div>
+                            <img src="/svg/search-blue.svg" />
+                            <div>AI搜索</div>
+                            <div>实时资讯，丰富信源，整合搜索</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <img src="/svg/pen-green.svg" />
+                            <div>帮我写作</div>
+                            <div>多种体裁，润色校对，一键成文</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="boxRight">
-                    DEF
+                <div>
+                    <div>
+                        <div class="boxLeft">
+                            <img src="/svg/gallery-orange.svg" />
+                            <div>图像生成</div>
+                            <div>自定风格，搜集灵感，复制同款</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="boxRight">
+                            <img src="/svg/book-red.svg" />
+                            <div>阅读总结</div>
+                            <div>论文课件，财报合同，翻译总结</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <div class="boxLeft">
+                            <img src="/svg/music-purple.svg" />
+                            <div>音乐生成</div>
+                            <div>歌词定制，曲风任选，人声演唱</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="boxRight">
+                            <img src="/svg/more-grey.svg" />
+                            <div>更多</div>
+                            <div>点击展示更多功能</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <!--聊天框-->
+        <div id="chatbox">
+            <!--功能按钮-->
+            <div id="functionBox">
+                <div>
+                    <svg t="1727847889938" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="9415" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M974.72 224L798.08 47.36a52.928 52.928 0 0 0-75.52 0l-603.52 603.52c-6.4 6.4-10.88 14.72-13.44 23.04L35.84 924.16c-5.12 18.56 0 39.04 14.08 52.48 10.24 10.24 23.68 15.36 37.12 15.36 5.12 0 10.24-0.64 15.36-1.92l246.4-73.6c8.32-2.56 16-7.04 22.4-13.44l603.52-603.52c21.12-20.48 21.12-54.4 0-75.52z m-113.28 37.76l-34.56 34.56-101.12-101.12 34.56-34.56 101.12 101.12z m-517.76 518.4L242.56 678.4l407.68-407.68 101.12 101.12-407.68 408.32z m-155.52-5.12l60.16 60.16-83.84 24.96 23.68-85.12z"
+                            p-id="9416"></path>
+                    </svg>帮我写作
+                </div>
+                <div>
+                    <svg t="1727848019867" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="10688" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M825 142.3H200c-74.1 0-134.3 60.3-134.3 134.3v473.1c0 71.4 56 129.8 126.4 133.9 2.6 0.2 5.2 0.4 7.9 0.4h625c26.3 0 50.8-7.7 71.6-20.9 5.5-3.5 10.8-7.4 15.7-11.6 28.7-24.7 47-61.1 47-101.8v-473c0-74.1-60.2-134.4-134.3-134.4zM262.4 255.4c44.5 0 80.6 36.1 80.6 80.6 0 44.5-36.1 80.6-80.6 80.6s-80.6-36.1-80.6-80.6c0-44.5 36.1-80.6 80.6-80.6zM825 794.6H200c-13.9 0-22.6-14.9-15.8-27l98.5-176.1c14.4-25 50.5-25 65 0l67.6 117.2c13.7 23.7 48 23.7 61.7 0l138.8-240.3c14.4-25 50.5-25 65 0l163.9 292.8c8.3 14.9-2.5 33.4-19.7 33.4z"
+                            p-id="10689"></path>
+                    </svg>图像生成
+                </div>
+                <div>
+                    <svg t="1727847847390" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="8254" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M911.8 839.6L750.9 678.7c120.1-160.6 87.2-388.1-73.3-508.2s-388.1-87.2-508.2 73.3c-46.9 62.8-72.3 139-72.3 217.4 0 200.5 162.5 363.1 363.1 363.1 78.4 0 154.6-25.4 217.4-72.3l160.8 160.8c20.2 20.3 53.1 20.3 73.4 0.1 20.2-20.2 20.2-53.1 0-73.3z m-451.7-119c-143.2 2-260.9-112.4-263-255.6-2-143.2 112.4-260.9 255.6-263h7.3c143.2 0 259.3 116.1 259.3 259.3S603.4 720.6 460.1 720.6z"
+                            p-id="8255"></path>
+                    </svg>AI搜索
+                </div>
+                <div>
+                    <svg t="1727849892646" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="13421" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M950.2 192.1c-60.7-34.4-136.4-54.8-218.7-54.8-82.4 0-158.4 20.7-219 55.1 0 0-0.1 0-0.1 0.1-60.6-34.5-136.6-55.2-218.9-55.2-82.3 0-158 20.3-218.7 54.7-6.3 3.6-10.1 10.5-10.1 17.9v650.2c0 11.8 9.4 20.3 19.8 20.3 2.9 0 5.9-0.7 8.7-2.1 57.3-28.4 126.1-44.9 200.3-44.9 73.5 0 141.9 16.5 198.9 44.4 3.6 1.7 7.1 3.5 10.5 5.3a20.39 20.39 0 0 0 19.2 0c0.1 0 0.1-0.1 0.2-0.1 0.5-0.2 0.9-0.5 1.4-0.8 3-1.5 5.9-3 8.9-4.5 57-27.8 125.4-44.4 198.9-44.4 74.2 0 143 16.5 200.3 44.9 2.9 1.4 5.8 2.1 8.7 2.1 10.4 0 19.8-8.5 19.8-20.3V210c0-7.4-3.8-14.3-10.1-17.9z m-218.7 602c-38.1 0-75.7 4.3-111.7 12.6-30.3 6.7-59.5 16.2-87.2 28.3v-35c2.8-1.4 5.5-2.9 8.5-4.2 56.8-27.7 122.7-42.3 190.4-42.3 38 0 75.3 4.5 110.9 13.4 27.9 7 54.4 16.6 78.9 28.6V831c-25.7-10.6-52.7-18.9-80.7-24.9-35.1-7.9-71.8-12-109.1-12zM103.8 831v-35.5c24.5-12 50.9-21.6 78.8-28.5 35.6-9 72.9-13.5 110.9-13.5 67.8 0 133.6 14.6 190.4 42.4 2.9 1.5 5.7 2.9 8.5 4.3V835c-29.6-13-61.1-22.9-93.8-29.7-34-7.3-69.3-11.1-105.1-11.1-33.6 0-66.7 3.3-98.6 9.7-31.7 6.1-62.3 15.2-91.1 27.1z m627.7-654.7c37 0 73.3 4.5 107.8 13.3 29.3 7.5 56.8 17.9 82 31.1V774c-55.1-25.4-120.1-40-189.8-40-73.4 0-141.8 16.5-198.9 44.4V225.9c27.6-15.6 58.2-27.7 91-36.2 34.6-8.9 70.9-13.4 107.9-13.4z m-545.7 13.3c34.4-8.9 70.7-13.3 107.7-13.3s73.3 4.5 108 13.4c32.7 8.4 63.3 20.5 90.9 36.1v552.6C435.3 750.5 366.9 734 293.5 734c-69.6 0-134.6 14.6-189.7 40V220.7c25.2-13.2 52.7-23.7 82-31.1z"
+                            p-id="13422"></path>
+                    </svg>阅读总结
+                </div>
+                <div>
+                    <svg t="1728039290592" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="27371" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M130.264557 870.035707a122.453333 160 68.891 1 0 298.527032-115.245873 122.453333 160 68.891 1 0-298.527032 115.245873Z"
+                            opacity=".99" p-id="27372"></path>
+                        <path
+                            d="M591.0825 774.046673a122.453333 160 68.891 1 0 298.527032-115.245872 122.453333 160 68.891 1 0-298.527032 115.245872Z"
+                            opacity=".99" p-id="27373"></path>
+                        <path
+                            d="M783.786667 98.56l-355.413334 113.066667A86.4 86.4 0 0 0 366.933333 294.4v495.786667h68.266667V388.266667c0-8.106667 5.12-15.36 13.226667-17.493334l355.84-113.493333c1.706667-0.426667 3.413333-0.853333 5.12-0.853333 8.96 0 18.346667 7.253333 18.346666 18.346666v418.133334h68.266667v-512c0-58.026667-56.32-99.413333-112.213333-82.346667z"
+                            opacity=".99" p-id="27374"></path>
+                    </svg>音乐生成
+                </div>
+                <div>
+                    <svg t="1728039023223" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="16980" id="mx_n_1728039023224"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path
+                            d="M504.012722 835.192538l332.678368-335.525614a73.179251 73.179251 0 0 1 30.330676-18.232373V142.552181a71.201163 71.201163 0 0 0-71.13123-71.12124H155.739432a71.201163 71.201163 0 0 0-71.131231 71.12124V889.440092a71.201163 71.201163 0 0 0 71.131231 71.131231H458.356862zM262.436277 213.683412h426.787384a35.575606 35.575606 0 0 1 0 71.14122h-426.787384a35.575606 35.575606 0 0 1 0-71.14122z m0 213.403682h313.766652a35.565615 35.565615 0 1 1 0 71.12124H262.436277a35.565615 35.565615 0 1 1 0-71.12124z m-35.565615 248.949316a35.515664 35.515664 0 0 1 35.565615-35.555625h202.624104a35.565615 35.565615 0 1 1 0 71.131231H262.436277a35.535644 35.535644 0 0 1-35.565615-35.575606zM901.838106 630.39054l-65.596582-65.596581 32.818272-32.7883a27.823101 27.823101 0 0 1 39.341964 0l26.234636 26.224646a27.843081 27.843081 0 0 1 0 39.371935L901.838106 630.39054z"
+                            p-id="16981"></path>
+                        <path
+                            d="M625.485283 906.773334L559.888701 841.186743 824.003356 578.460746l65.596582 65.596581-264.114655 262.716007zM507.189651 960.571323l39.911413-106.606933 65.047113 65.057103-104.958526 41.54983z"
+                            p-id="16982"></path>
+                    </svg>解题答疑
+                </div>
+                <div>
+                    <svg t="1728039216758" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="26226" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M454.5083 1023.996806H340.163697a57.4917 57.4917 0 0 1-57.4917-57.4917V59.413839a57.4917 57.4917 0 0 1 57.4917-57.4917H454.5083a57.4917 57.4917 0 0 1 57.4917 57.4917v907.091267a57.4917 57.4917 0 0 1-57.4917 57.4917z m-107.956637-63.879667H448.120333V65.801806H346.551663zM198.350837 1023.996806H84.006233a57.4917 57.4917 0 0 1-57.4917-57.4917V59.413839a57.4917 57.4917 0 0 1 57.4917-57.4917h114.344604A57.4917 57.4917 0 0 1 256.481333 59.413839v907.091267a57.4917 57.4917 0 0 1-58.130496 57.4917zM90.3942 960.117139H192.601667V65.801806H90.3942z"
+                            p-id="26227"></path>
+                        <path
+                            d="M223.902703 234.444126H58.454367a31.939833 31.939833 0 0 1 0-63.879667h165.448336a31.939833 31.939833 0 0 1 0 63.879667zM480.060167 234.444126H314.61183a31.939833 31.939833 0 0 1 0-63.879667H480.060167a31.939833 31.939833 0 0 1 0 63.879667zM831.398333 1023.996806a56.852903 56.852903 0 0 1-55.57531-42.799377L538.82946 104.768403A58.130497 58.130497 0 0 1 579.712447 33.861973l110.511823-31.939834a57.4917 57.4917 0 0 1 70.267633 40.882987l235.077174 875.79023a58.130497 58.130497 0 0 1-40.882987 70.90643L844.174267 1023.996806zM602.07033 93.908859L831.398333 960.117139l98.374687-26.190663L703.639 65.801806z m96.458297-58.769293z"
+                            p-id="26228"></path>
+                        <path
+                            d="M767.518667 866.214029a31.939833 31.939833 0 0 1-30.66224-23.635476 31.301037 31.301037 0 0 1 22.357883-38.966597l160.337963-42.799377a31.301037 31.301037 0 0 1 38.966597 22.357884 31.939833 31.939833 0 0 1-22.99668 38.966596l-159.699167 42.799377a19.1639 19.1639 0 0 1-8.304356 1.277593z"
+                            p-id="26229"></path>
+                    </svg>学术搜索
+                </div>
+                <div>
+                    <svg t="1728027166276" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="9628" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="200" height="200">
+                        <path
+                            d="M224 160c-19.2 0-32 12.8-32 32v160c0 19.2 12.8 32 32 32h160c19.2 0 32-12.8 32-32V192c0-19.2-12.8-32-32-32H224z m0-64h160c54.4 0 96 41.6 96 96v160c0 54.4-41.6 96-96 96H224c-54.4 0-96-41.6-96-96V192c0-54.4 41.6-96 96-96z m0 480c-19.2 0-32 12.8-32 32v160c0 19.2 12.8 32 32 32h160c19.2 0 32-12.8 32-32v-160c0-19.2-12.8-32-32-32H224z m0-64h160c54.4 0 96 41.6 96 96v160c0 54.4-41.6 96-96 96H224c-54.4 0-96-41.6-96-96v-160c0-54.4 41.6-96 96-96zM640 160c-19.2 0-32 12.8-32 32v160c0 19.2 12.8 32 32 32h160c19.2 0 32-12.8 32-32V192c0-19.2-12.8-32-32-32h-160z m0-64h160c54.4 0 96 41.6 96 96v160c0 54.4-41.6 96-96 96h-160c-54.4 0-96-41.6-96-96V192c0-54.4 41.6-96 96-96z m0 480c-19.2 0-32 12.8-32 32v160c0 19.2 12.8 32 32 32h160c19.2 0 32-12.8 32-32v-160c0-19.2-12.8-32-32-32h-160z m0-64h160c54.4 0 96 41.6 96 96v160c0 54.4-41.6 96-96 96h-160c-54.4 0-96-41.6-96-96v-160c0-54.4 41.6-96 96-96z"
+                            p-id="9629"></path>
+                    </svg>更多
+                </div>
+            </div>
+            <!--输入框-->
+            <div id="inputBox">
+                <div class="inputBoxLeft">
+                    <img id="uploadBtn" src="svg/clip.svg" />
+                    <textarea id="typeBox" placeholder="发消息"></textarea>
+                </div>
+                <div class="inputBoxRight">
+                    <div>
+                        <img id="screenshotBtn" src="svg/scissors.svg" />
+                        <img id="microphoneBtn" src="svg/microphone.svg" />
+                    </div>
+                    <div id="inputBoxSplit"></div>
+                    <div>
+                        <img id="sendBtn" src="svg/up.svg" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--展开侧栏-->
+        <img id="sidebarUnFoldBtn" src="/svg/LeftSidebar.svg" />
     </div>
     <script>
-        document.getElementById("sidebarFoldBtn").addEventListener("click", () => {
-            alert("收起按钮被点击！");
-        });
+        document.getElementById("sidebarFoldBtn").addEventListener("click", FoldSidebar);
+        document.getElementById("sidebarUnFoldBtn").addEventListener("click", unFoldSidebar);
         document.getElementById("newDialog").addEventListener("click", () => {
             alert("新对话按钮被点击！");
+        });
+        document.getElementById("uploadBtn").addEventListener("click", () => {
+            alert("上传按钮被点击！");
+        });
+        function FoldSidebar() {
+            document.getElementById("sidebar").style.transform = "translateX(-300px)";
+            document.getElementById("main").style.left = "0";
+            document.getElementById("sidebarFoldBtn").style.display = "none";
+            document.getElementById("sidebarUnFoldBtn").style.display = "unset";
+            if (document.getElementById("sidebarMask") !== null) {
+                document.getElementById("sidebarMask").parentNode.removeChild(document.getElementById("sidebarMask"));
+            }
+        }
+        function unFoldSidebar() {
+            let w = window.innerWidth;
+            if (w >= 800) {
+                document.getElementById("sidebar").style.transform = "unset";
+                document.getElementById("main").style.left = "300px";
+                document.getElementById("sidebarFoldBtn").style.display = "unset";
+                document.getElementById("sidebarUnFoldBtn").style.display = "none";
+                if (document.getElementById("sidebarMask") !== null) {
+                    document.getElementById("sidebarMask").parentNode.removeChild(document.getElementById("sidebarMask"));
+                }
+            }
+            else {
+                document.getElementById("sidebar").style.transform = "unset";
+                document.getElementById("main").style.left = "0";
+                document.getElementById("sidebarFoldBtn").style.display = "unset";
+                document.getElementById("sidebarUnFoldBtn").style.display = "none";
+                if (document.getElementById("sidebarMask") === null) {
+                    let mask = document.createElement("div");
+                    mask.id = "sidebarMask";
+                    mask.style.position = "fixed";
+                    mask.style.top = "0";
+                    mask.style.right = "0";
+                    mask.style.bottom = "0";
+                    mask.style.left = "0";
+                    mask.style.zIndex = "5";
+                    mask.style.backgroundColor = "#000000";
+                    mask.style.opacity = "0.5";
+                    mask.onclick = FoldSidebar;
+                    document.body.appendChild(mask);
+                }
+            }
+        }
+
+        var w1 = window.innerWidth;
+        if (w1 < 800) FoldSidebar();
+        else unFoldSidebar();
+        window.addEventListener('resize', function () {
+            let w = window.innerWidth;
+            if ((w < 800 && w1 >= 800) || (w >= 800 && w1 < 800)) {
+                if (w < 800) FoldSidebar();
+                else unFoldSidebar();
+            }
+            w1 = w;
         });
     </script>
 </body>
