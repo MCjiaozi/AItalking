@@ -247,10 +247,14 @@
             max-width: 800px;
             width: 90%;
             position: absolute;
-            top: 50px;
+            top: 60px;
             bottom: 135px;
             overflow-y: auto;
             overflow-x: hidden;
+            transition: all .5s;
+        }
+
+        #centerBox div {
             transition: all .5s;
         }
 
@@ -541,38 +545,6 @@
             background-color: var(--sidebar-bkg-hover);
         }
 
-        @media screen and (max-width: 800px) {
-            #sidebar {
-                transform: translateX(-300px);
-            }
-
-            #main {
-                left: 0;
-            }
-
-            #sidebarFoldBtn {
-                display: none;
-            }
-
-            #sidebarUnFoldBtn {
-                display: unset;
-            }
-        }
-
-        @media screen and (min-height: 800px) {
-            #centerBoxDefault {
-                margin-top: 135px;
-            }
-        }
-
-        @media screen and (max-width:950px) {
-            #centerBoxAd {
-                position: unset;
-                margin-bottom: 15px;
-                margin-left: 15px;
-            }
-        }
-
         .noticeBefore {
             opacity: 0;
             background-color: #41454c;
@@ -623,6 +595,39 @@
 
         #noticeIcon:hover {
             background-color: var(--sidebar-bkg-hover);
+        }
+
+        @media screen and (max-width: 800px) {
+            #sidebar {
+                transform: translateX(-300px);
+            }
+
+            #main {
+                left: 0;
+            }
+
+            #sidebarFoldBtn {
+                display: none;
+            }
+
+            #sidebarUnFoldBtn {
+                display: unset;
+            }
+        }
+
+        @media screen and (min-height: 800px) {
+            #centerBoxDefault {
+                margin-top: 135px;
+            }
+        }
+
+        @media screen and (max-width:950px) {
+            #centerBoxAd {
+                position: unset;
+                margin-bottom: 15px;
+                margin-left: 15px;
+            }
+
         }
     </style>
 </head>
@@ -1223,7 +1228,7 @@
             let el = document.createElement("div");
             el.style.textAlign = "center";
             el.style.lineHeight = "25px";
-            el.innerText = "我的账号";
+            el.innerText = "登录/注销";
             e.target.notice = new Notice(e, 25, 65, el, "DOWN");
             e.target.notice.show();
         })
@@ -1256,24 +1261,68 @@
 
 
         function sendMessage() {
-            let ans = "《秋日随想》\n在这个秋意渐浓的日子里，2024 年 10 月 6 日，星期日，阳光透过树叶的缝隙洒下，带来丝丝温暖。秋天，像是一位画家，用金黄、橙红等色彩勾勒出大地的美丽画卷。树叶在风中飘落，如同舞动的蝴蝶，诉说着季节的更替。走在铺满落叶的小路上，脚下发出沙沙的声响，仿佛是大自然演奏的美妙旋律。秋天也是收获的季节，田野里金黄的稻穗低垂，果树上挂满了沉甸甸的果实。人们在这个季节里忙碌着，脸上洋溢着丰收的喜悦。秋天的宁静与美好，让人的心灵得到了片刻的安宁。在这个美好的日子里，不妨停下匆忙的脚步，去感受秋天的魅力，享受生活中的每一个美好瞬间。";
-
+            if (getCookie("token") === "") {
+                login();
+                return;
+            }
+            let token = getCookie("token");
             let textarea = document.getElementById("typeBox");
             let text = textarea.value;
             textarea.value = '';
             sendBtn.classList.remove("sendBtnEnabled");
             sendBtn.classList.add("sendBtnDisabled");
             if (centerDialog.mode === "new") {
-                sidebar.menus.recentDialog.data.unshift(["新对话", ["q", text], ["a", ans]]);
+                sidebar.menus.recentDialog.data.unshift(["新对话", ["q", text]]);
                 sidebar.menus.recentDialog.refresh();
                 sidebar.menus.recentDialog.show();
                 sidebar.menus.recentDialog.dataElement.children[0].onclick();
             }
             else if (centerDialog.mode === "talking") {
-                sidebar.menus.recentDialog.data[centerDialog.talking].push(["q", text], ["a", ans]);
-                centerDialog.add(['', ["q", text], ["a", ans]]);
+                sidebar.menus.recentDialog.data[centerDialog.talking].push(["q", text]);
+                centerDialog.add(['', ["q", text]]);
             }
+            document.getElementById("typeBox").value = "";
+            document.getElementById("typeBox").placeholder = "正在生成，请稍后……";
+            document.getElementById("typeBox").setAttribute("disabled", "true");
+            document.getElementById("typeBox").style.backgroundColor = "#ffffff";
+            centerDialog.mode = "answering";
+            requestMsg("mode=postMsg&msg=" + text + "&token=" + token, (chat_id) => {
+                window.checkMsgInterval = setInterval(() => {
+                    requestMsg("mode=ckeckMsg&chat_id=" + chat_id + "&token=" + token, (status) => {
+                        if (status === "completed") {
+                            requestMsg("mode=getMsg&chat_id=" + chat_id + "&token=" + token, (result) => {
+                                clearInterval(checkMsgInterval);
+                                if (centerDialog.mode === "answering") {
+                                    centerDialog.mode = "talking";
+                                    sidebar.menus.recentDialog.data[centerDialog.talking].push(["a", result]);
+                                    centerDialog.add(['', ["a", result]]);
+                                    document.getElementById("typeBox").value = "";
+                                    document.getElementById("typeBox").placeholder = "发消息";
+                                    document.getElementById("typeBox").style.backgroundColor = null;
+                                    document.getElementById("typeBox").removeAttribute("disabled");
+                                }
+                            });
+                        }
+                    });
+                }, 500);
+            });
         }
+
+        function requestMsg(data, callback) {
+            let request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
+                    let result = request.responseText;
+                    console.log(result);
+                    callback(result);
+                }
+            }
+            request.open('post', 'https://dev.mcjiaozi.com/AItalking/request/');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            request.send(data);
+        }
+
+
 
         window.centerDialog = new Object();
         centerDialog.mode = "new";
@@ -1282,17 +1331,29 @@
             data.forEach((element, index) => {
                 if (index >= 1) {
                     if (element[0] === "q") {
-                        let qE = document.createElement("p");
+                        let container = document.createElement("div");
+                        container.style.width = "100%";
+                        let ccc = document.createElement("div");
+                        ccc.style.float = "right";
+                        ccc.style.paddingLeft = "15px";
+                        ccc.style.paddingRight = "15px";
+                        ccc.style.boxSizing = "border-box";
+                        ccc.style.maxWidth = "100%";
+                        let qE = document.createElement("div");
                         qE.style.color = "var(--chat-color)";
                         qE.innerText = element[1];
                         qE.style.backgroundColor = "#f5f5f5";
                         qE.style.wordBreak = "break-all";
                         qE.style.padding = "15px";
-                        qE.style.marginLeft = "15px";
-                        qE.style.marginRight = "15px";
                         qE.style.borderRadius = "10px";
                         qE.style.boxSizing = "border-box";
-                        document.getElementById("centerBox").appendChild(qE);
+                        qE.style.maxWidth = "450px";
+                        let div = document.createElement("div");
+                        div.style.clear = "both";
+                        ccc.appendChild(qE);
+                        container.appendChild(ccc);
+                        container.appendChild(div);
+                        document.getElementById("centerBox").appendChild(container);
                     }
                     else if (element[0] === "a") {
                         let aE = document.createElement("p");
@@ -1324,6 +1385,12 @@
         //用户头像
         document.getElementById("avatar").addEventListener("click", login);
         function login() {
+            if (getCookie("token") !== "") {
+                if (confirm("您已登录，点击确认将注销登录！")) {
+                    setCookie("token", "");
+                }
+                return;
+            }
             let parameter = { height: 300, width: 250, title: "登录", content: "<div id=\"login\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
             window.loginI = iwindow(parameter);
             let login = document.getElementById("login");
@@ -1396,6 +1463,7 @@
                         if (a.success === "true") {
                             resultElement.style.color = "green";
                             resultElement.innerText = "登录成功！";
+                            setCookie("token", a.token, 7, "/");
                             setTimeout(() => { iwindow_close(loginI); }, 1000);
                         }
                         else {
@@ -1415,7 +1483,27 @@
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             request.send("username=" + encodeURIComponent(document.getElementById("username").value) + "&password=" + encodeURIComponent(document.getElementById("password").value));
         }
-
+        function setCookie(name, value, days, path) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=" + (path || "/");
+        }
+        function getCookie(name) {
+            if (document.cookie.length > 0) {
+                start = document.cookie.indexOf(name + "=");
+                if (start != -1) {
+                    start = start + name.length + 1;
+                    end = document.cookie.indexOf(";", start);
+                    if (end == -1) end = document.cookie.length;
+                    return unescape(document.cookie.substring(start, end));
+                }
+            }
+            return "";
+        }
 
         //使手机方便检测触屏落点
         document.body.addEventListener("mousemove", () => { })
