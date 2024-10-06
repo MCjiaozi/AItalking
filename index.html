@@ -1387,9 +1387,7 @@
         document.getElementById("avatar").addEventListener("click", login);
         function login() {
             if (getCookie("token") !== "") {
-                if (confirm("您已登录，点击确认将注销登录！")) {
-                    setCookie("token", "");
-                }
+                logout();
                 return;
             }
             let parameter = { height: 300, width: 250, title: "登录", content: "<div id=\"login\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
@@ -1483,6 +1481,53 @@
             request.open('post', 'https://dev.mcjiaozi.com/AItalking/login/');
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             request.send("username=" + encodeURIComponent(document.getElementById("username").value) + "&password=" + encodeURIComponent(document.getElementById("password").value));
+        }
+        function logout() {
+            let parameter = { height: 300, width: 250, title: "注销", content: "<div id=\"logout\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
+            window.logoutI = iwindow(parameter);
+            let logout = document.getElementById("logout");
+            logout.style.padding = "5px 20px";
+            let title = document.createElement("h1");
+            title.innerText = "注销";
+            title.style.textAlign = "center";
+            logout.appendChild(title);
+            let input = document.createElement("div");
+            let line1 = document.createElement("div");
+            line1.innerText = "确实要注销吗？点击“注销”将注销您的登录，否则请关闭本窗口。"
+            input.appendChild(line1);
+            logout.appendChild(input);
+
+            let btndiv = document.createElement("div");
+            btndiv.style.display = "flex";
+            btndiv.style.justifyContent = "center";
+            btndiv.style.paddingTop = "15px";
+            let btn = document.createElement("button");
+            btn.innerText = "注销";
+            btn.style.height = "70px";
+            btn.style.width = "150px";
+            btn.style.fontSize = "36px";
+            btn.onclick = tryLogout;
+            btndiv.appendChild(btn);
+            logout.appendChild(btndiv);
+
+            let result = document.createElement("div");
+            result.style.display = "flex";
+            result.style.justifyContent = "center";
+            result.style.paddingTop = "10px";
+            result.id = "logoutResult";
+            result.style.fontWeight = "bold";
+            logout.appendChild(result);
+        }
+        function tryLogout() {
+            let t = event.target;
+            t.setAttribute("disabled", "true");
+            let resultElement = document.getElementById("logoutResult");
+            resultElement.style.color = "black";
+            resultElement.innerText = "正在注销……";
+            setCookie("token", "");
+            resultElement.style.color = "green";
+            resultElement.innerText = "您已注销！";
+            setTimeout(() => { iwindow_close(logoutI); }, 1000);
         }
         function setCookie(name, value, days, path) {
             var expires = "";
