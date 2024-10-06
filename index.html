@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>一个智能 AI 体！</title>
+    <script src="/js/iwindow.js"></script>
     <style>
         :root {
             --sidebar-bkg: #f3f4f6;
@@ -14,20 +15,44 @@
             --sidebar-newDialog-border-hover: #bad2f8;
             --sidebar-newDialog-color: #0057ff;
             --sidebar-bkg-hover: #e9eaec;
-            --sidebar-split: #e2e3e5;
+            --sidebar-split: #d5d6d8;
 
             --centerBox-border: #e2e2e2;
+            --centerBox-subcolor: #7f7f7f;
 
             --inputBox-border: #e5e5e5;
             --inputBox-split: #ebebeb;
             --inputBox-img-bkg-hover: #e9eaec;
             --inputBox-sendBtn-bkg: #0066ff;
             --inputBox-sendBtn-bkg-hover: #004ad9;
+            --inputBox-sendBtn-disabled-bkg: #dcdcdc;
             --inputBox-functionBox-border: #e0e0e0;
             --inputBox-functionBox-color: #7f7f7f;
             --inputBox-functionBox-border-hover: #d7d7d7;
             --inputBox-functionBox-color-hover: #252525;
             --inputBox-functionBox-bkg-hover: #f5f5f5;
+
+            --chat-color: #262626;
+        }
+
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e9eaec;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888888;
+            border-radius: 10px;
+
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555555;
         }
 
         /*侧栏*/
@@ -41,9 +66,14 @@
             background-color: var(--sidebar-bkg);
             font-size: 16px;
             transition: all .5s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        #sidebar div {
+        .sidebarBtn,
+        #sidebarFirstLine,
+        #newDialog {
             width: 280px;
             height: 50px;
             border-style: solid;
@@ -53,9 +83,19 @@
             box-sizing: border-box;
             margin: 6px 10px;
             cursor: pointer;
+            user-select: none;
+            background-color: var(--sidebar-bkg);
         }
 
-        #sidebar div span {
+        .sidebarBtnFrame {
+            width: 280px;
+            height: 50px;
+            margin: 6px 0;
+        }
+
+        .sidebarBtn span,
+        #sidebarFirstLine span,
+        #newDialog span {
             float: left;
             line-height: 46px;
             padding-left: 12px;
@@ -63,39 +103,42 @@
 
         #newDialog {
             background-color: var(--sidebar-newDialog-bkg);
-            border-color: var(--sidebar-newDialog-border) !important;
+            border-color: var(--sidebar-newDialog-border);
             color: var(--sidebar-newDialog-color);
         }
 
         #newDialog:hover {
             background-color: var(--sidebar-newDialog-bkg-hover);
-            border-color: var(--sidebar-newDialog-border-hover) !important;
+            border-color: var(--sidebar-newDialog-border-hover);
         }
 
-        #sidebar div:not(:first-child):not(#newDialog):hover,
+        .sidebarBtn:hover,
         #sidebarFoldBtn:hover {
             background-color: var(--sidebar-bkg-hover);
         }
 
-        #sidebar div:not(:first-child) span img {
+        .sidebarBtn span img,
+        #newDialog span img {
             height: 20px;
             width: 20px;
             float: left;
             margin: 14px 5px 14px 0;
+            -webkit-user-drag: none;
         }
 
-        #sidebar div:not(:first-child) img {
+        .sidebarBtn img,
+        #newDialog img {
             height: 20px;
             width: 20px;
             float: right;
             margin: 14px 12px 14px 0;
         }
 
-        #sidebar div:first-child {
+        #sidebarFirstLine {
             cursor: default;
         }
 
-        #sidebar div:first-child span img {
+        #sidebarFirstLine span img {
             height: 36px;
             width: 36px;
             float: left;
@@ -117,12 +160,74 @@
             cursor: pointer;
         }
 
-        #sidebarSplit {
-            border: none !important;
-            height: 2px !important;
-            background-color: var(--sidebar-split) !important;
-            margin: 5px 10px !important;
-            cursor: default !important;
+        .sidebarSplit {
+            border: none;
+            height: 1px;
+            background-color: var(--sidebar-split);
+            margin: 5px 10px;
+            cursor: default;
+        }
+
+        .sidebarData {
+            margin: 0 30px 0 38px;
+            transition: height .5s;
+            overflow: hidden;
+            height: 0;
+
+        }
+
+        .sidebarData div {
+            height: 32px;
+            margin: 0 10px 5px 0;
+            padding: 0 10px 0 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .sidebarData div span {
+            color: rgb(0, 0, 0, .5);
+            font-size: 14px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .sidebarData div:hover {
+            background-color: var(--sidebar-bkg-hover);
+        }
+
+        #recentDialogArrow {
+            transition: all .5s;
+        }
+
+        #recentDialogBtn {
+            margin-bottom: 3px;
+        }
+
+        #myAgentsArrow {
+            transition: all .5s;
+        }
+
+        #myAgentsBtn {
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+
+        #favoritesBtn {
+            margin-top: 3px;
+        }
+
+        #sidebarFunctionList {
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 100%;
+        }
+
+        #sidebarFunctionList::-webkit-scrollbar {
+            width: 0;
         }
 
         /*主窗口*/
@@ -140,15 +245,19 @@
         /*主窗口 - centerBox*/
         #centerBox {
             max-width: 800px;
-            margin-top: 100px;
-            max-height: 500px;
             width: 90%;
+            position: absolute;
+            top: 50px;
+            bottom: 135px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: all .5s;
         }
 
         /*行*/
         #boxs div {
             width: 100%;
-            height: 100px;
+            height: 80px;
             margin: 0 0 10px 0;
         }
 
@@ -186,38 +295,76 @@
             height: 20px;
             width: 20px;
             float: left;
-            padding: 15px 10px 15px 20px;
+            padding: 13px 10px 15px 20px;
+            -webkit-user-drag: none;
         }
 
         #boxs div div div div {
             all: unset;
             display: block;
+            font-size: 14px;
         }
 
         #boxs div div div div:hover {
             all: unset;
             display: block;
+            font-size: 14px;
         }
 
         #boxs div div div div:nth-of-type(1) {
-            line-height: 50px;
-            font-size: 16px;
+            line-height: 45px;
             font-weight: bold;
-            height: 50px;
+            height: 45px;
+            white-space: nowrap;
         }
 
         #boxs div div div div:nth-of-type(2) {
-            line-height: 20px;
-            font-size: 16px;
-            height: 20px;
+            line-height: 16px;
+            height: 16px;
             margin-left: 50px;
+            color: var(--centerBox-subcolor);
+        }
+
+        /*广告*/
+        #centerBoxUp {
+            position: relative;
+        }
+
+        #centerBoxAd {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNDMiIGhlaWdodD0iNDAiIGZpbGw9Im5vbmUiPjxnIGNsaXAtcGF0aD0idXJsKCNhKSIgZmlsdGVyPSJ1cmwoI2IpIj48cGF0aCBmaWxsPSIjRUVGM0ZCIiBkPSJNMCAwaDM0M3Y0MEgweiIvPjxnIGZpbHRlcj0idXJsKCNjKSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTg1IDI0LjVDODUgNTUuOTgxIDE0Mi43NTUgNjAgMjE0IDYwczEyOS0xNS44OTQgMTI5LTM1LjVTMjg1LjI0NS0xMSAyMTQtMTEgODUtNi45ODEgODUgMjQuNSIvPjwvZz48ZyBmaWx0ZXI9InVybCgjZCkiPjxwYXRoIGZpbGw9IiNGQkM4QjQiIGQ9Ik01MSAyMy41QzUxIDQ1LjA0NCAxMjAuMTQ3IDUxIDE5OC4wMTMgNTEgMjc1Ljg3OCA1MSAzMzkgMzguNjg4IDMzOSAyMy41UzI3NS44NzgtNCAxOTguMDEzLTRDMTIwLjE0Ny00IDUxIDEuOTU3IDUxIDIzLjUiLz48L2c+PC9nPjxkZWZzPjxmaWx0ZXIgaWQ9ImIiIHdpZHRoPSIzNDMiIGhlaWdodD0iNDIiIHg9IjAiIHk9IjAiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCIvPjxmZUJsZW5kIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSIvPjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgcmVzdWx0PSJoYXJkQWxwaGEiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiLz48ZmVPZmZzZXQgZHk9IjIiLz48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4Ii8+PGZlQ29tcG9zaXRlIGluMj0iaGFyZEFscGhhIiBrMj0iLTEiIGszPSIxIiBvcGVyYXRvcj0iYXJpdGhtZXRpYyIvPjxmZUNvbG9yTWF0cml4IHZhbHVlcz0iMCAwIDAgMCAxIDAgMCAwIDAgMSAwIDAgMCAwIDEgMCAwIDAgMC42IDAiLz48ZmVCbGVuZCBpbjI9InNoYXBlIiByZXN1bHQ9ImVmZmVjdDFfaW5uZXJTaGFkb3dfMTg5Ml8zOTc2MSIvPjwvZmlsdGVyPjxmaWx0ZXIgaWQ9ImMiIHdpZHRoPSIzNTgiIGhlaWdodD0iMTcxIiB4PSIzNSIgeT0iLTYxIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz48ZmVCbGVuZCBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiLz48ZmVHYXVzc2lhbkJsdXIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzE4OTJfMzk3NjEiIHN0ZERldmlhdGlvbj0iMjUiLz48L2ZpbHRlcj48ZmlsdGVyIGlkPSJkIiB3aWR0aD0iMzg4IiBoZWlnaHQ9IjE1NSIgeD0iMSIgeT0iLTU0IiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz48ZmVCbGVuZCBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiLz48ZmVHYXVzc2lhbkJsdXIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzE4OTJfMzk3NjEiIHN0ZERldmlhdGlvbj0iMjUiLz48L2ZpbHRlcj48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMzQzdjQwSDB6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+");
+            background-size: cover;
+            height: 52px;
+            width: 230px;
+            border-radius: 15px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0;
+            right: 10px;
+        }
+
+        #centerBoxAd img {
+            height: 30px;
+            width: 30px;
+            -webkit-user-drag: none;
+        }
+
+        #centerBoxAd span {
+            font-size: 16px;
+            margin: 0 5px;
+        }
+
+        #centerBoxAd:hover {
+            box-shadow: 0 10px 20px 0 rgba(65, 64, 64, .2), 0 2px 16px 0 hsla(0, 0%, 100%, .8);
         }
 
         /*主窗口 - chatbox*/
         #chatbox {
             position: absolute;
             bottom: 0;
-            height: 150px;
+            height: 135px;
             width: 90%;
             max-width: 800px;
         }
@@ -235,7 +382,8 @@
             box-shadow: 0px 5px 10px 0 var(--centerBox-border);
         }
 
-        #inputBox div img {
+        .inputBoxLeft img,
+        .inputBoxRight img:not(#sendBtn) {
             height: 30px;
             width: 30px;
             border-style: solid;
@@ -245,9 +393,11 @@
             box-sizing: border-box;
             cursor: pointer;
             margin: 15px 0 15px 0;
+            -webkit-user-drag: none;
         }
 
-        #inputBox div img:hover {
+        .inputBoxLeft img:hover,
+        .inputBoxRight img:not(#sendBtn):hover {
             background-color: var(--inputBox-img-bkg-hover);
         }
 
@@ -296,12 +446,33 @@
         }
 
         #sendBtn {
-            background-color: var(--inputBox-sendBtn-bkg) !important;
-            border-radius: 100% !important;
+            height: 30px;
+            width: 30px;
+            border-style: solid;
+            border-width: 1px;
+            border-color: transparent;
+            border-radius: 100%;
+            box-sizing: border-box;
+            margin: 15px 0 15px 0;
+            -webkit-user-drag: none;
         }
 
-        #sendBtn:hover {
-            background-color: var(--inputBox-sendBtn-bkg-hover) !important;
+        .sendBtnDisabled {
+            background-color: var(--inputBox-sendBtn-disabled-bkg);
+            cursor: not-allowed;
+        }
+
+        .sendBtnDisabled:hover {
+            background-color: var(--inputBox-sendBtn-disabled-bkg);
+        }
+
+        .sendBtnEnabled {
+            background-color: var(--inputBox-sendBtn-bkg);
+            cursor: pointer;
+        }
+
+        .sendBtnEnabled:hover {
+            background-color: var(--inputBox-sendBtn-bkg-hover);
         }
 
         #functionBox {
@@ -326,6 +497,7 @@
             padding: 0 10px;
             color: var(--inputBox-functionBox-color);
             font-size: 14px;
+            user-select: none;
         }
 
         #functionBox div:hover {
@@ -341,6 +513,7 @@
             margin: 11px 0;
             float: left;
             fill: var(--inputBox-functionBox-color);
+            -webkit-user-drag: none;
         }
 
         #functionBox div:hover svg {
@@ -353,7 +526,6 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            border-radius: 100%;
             border-style: solid;
             border-width: 1px;
             border-color: transparent;
@@ -386,13 +558,79 @@
                 display: unset;
             }
         }
+
+        @media screen and (min-height: 800px) {
+            #centerBoxDefault {
+                margin-top: 135px;
+            }
+        }
+
+        @media screen and (max-width:950px) {
+            #centerBoxAd {
+                position: unset;
+                margin-bottom: 15px;
+                margin-left: 15px;
+            }
+        }
+
+        .noticeBefore {
+            opacity: 0;
+            background-color: #41454c;
+            border-radius: 7px;
+            position: fixed;
+            color: #FFFFFF;
+            font-size: 11px;
+            transition: all .1s;
+            z-index: 20;
+        }
+
+        .noticeBefore ul {
+            padding-left: 25px;
+            margin: 5px 0;
+        }
+
+        .noticeAfter {
+            opacity: 1;
+            transform: translateY(-10px);
+        }
+
+        .noticeAfterDown {
+            opacity: 1;
+            transform: translateY(10px);
+        }
+
+        #avatar {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            border-radius: 100%;
+            border-style: none;
+            height: 40px;
+            width: 40px;
+            cursor: pointer;
+        }
+
+        #noticeIcon {
+            position: absolute;
+            top: 10px;
+            right: 75px;
+            border-radius: 10px;
+            border-style: none;
+            height: 40px;
+            width: 40px;
+            cursor: pointer;
+        }
+
+        #noticeIcon:hover {
+            background-color: var(--sidebar-bkg-hover);
+        }
     </style>
 </head>
 
 <body>
     <!--侧栏-->
     <div id="sidebar">
-        <div>
+        <div id="sidebarFirstLine">
             <span style="padding-left:3px;">
                 <img src="/svg/AI.svg" /><b>超级助手</b>
             </span>
@@ -401,94 +639,114 @@
         <div id="newDialog">
             <span><img src="/svg/plus.svg" /><b>新对话</b></span>
         </div>
-        <div>
-            <span><img src="/svg/search.svg" />AI搜索</span>
+        <div id="sidebarFunctionList">
+            <div id="AISearchBtn" class="sidebarBtn">
+                <span><img src="/svg/search.svg" />AI搜索</span>
+            </div>
+            <div id="helpWritngBtn" class="sidebarBtn">
+                <span><img src="/svg/pen.svg" />帮我写作</span>
+            </div>
+            <div id="imageGenerationBtn" class="sidebarBtn">
+                <span><img src="/svg/gallery.svg" />图像生成</span>
+            </div>
+            <div id="readingSummaryBtn" class="sidebarBtn">
+                <span><img src="/svg/book.svg" />阅读总结</span>
+            </div>
+            <div class="sidebarSplit" id="sidebarSplit1"></div>
+            <div id="recentDialogBtn" class="sidebarBtnFrame">
+                <div id="recentDialogBtnBox">
+                    <div id="recentDialogBtnIn" class="sidebarBtn">
+                        <span><img src="/svg/message.svg" />最近对话</span>
+                        <img id="recentDialogArrow" src="/svg/right.svg" />
+                    </div>
+                </div>
+            </div>
+            <div id="myAgentsBtn" class="sidebarBtnFrame">
+                <div id="myAgentsBtnBox">
+                    <div id="myAgentsBtnIn" class="sidebarBtn">
+                        <span><img src="/svg/4star.svg" />我的智能体</span>
+                        <img ID="myAgentsArrow" src="/svg/right.svg" />
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <span><img src="/svg/pen.svg" />帮我写作</span>
-        </div>
-        <div>
-            <span><img src="/svg/gallery.svg" />图像生成</span>
-        </div>
-        <div>
-            <span><img src="/svg/book.svg" />阅读总结</span>
-        </div>
-        <div id="sidebarSplit"></div>
-        <div>
-            <span><img src="/svg/message.svg" />最近对话</span>
-            <img src="/svg/right.svg" />
-        </div>
-        <div>
-            <span><img src="/svg/4star.svg" />我的智能体</span>
-            <img src="/svg/right.svg" />
-        </div>
-        <div>
+        <div id="favoritesBtn" class="sidebarBtn">
             <span><img src="/svg/bookmark.svg" />收藏夹</span>
         </div>
     </div>
     <!--主窗口-->
     <div id="main">
         <div id="centerBox">
-            <h1 style="padding:0 20px;">你好，用户<br>你的超级助手已上线！</h1>
-            <div id="boxs">
-                <!--行-->
-                <div>
-                    <!--列-->
-                    <div>
-                        <!--框-->
-                        <div>
-                            <img src="/svg/search-blue.svg" />
-                            <div>AI搜索</div>
-                            <div>实时资讯，丰富信源，整合搜索</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <img src="/svg/pen-green.svg" />
-                            <div>帮我写作</div>
-                            <div>多种体裁，润色校对，一键成文</div>
-                        </div>
+            <div id="centerBoxDefault">
+                <div id="centerBoxUp">
+                    <h1 style="padding:0 20px;">你好，用户<br>你的超级助手已上线！</h1>
+                    <div id="centerBoxAd">
+                        <img src="/svg/student.svg" />
+                        <span>大学生激励计划</span>
+                        <img src="/svg/right-arrow.svg" />
                     </div>
                 </div>
-                <div>
+                <div id="boxs">
+                    <!--行-->
                     <div>
-                        <div class="boxLeft">
-                            <img src="/svg/gallery-orange.svg" />
-                            <div>图像生成</div>
-                            <div>自定风格，搜集灵感，复制同款</div>
+                        <!--列-->
+                        <div>
+                            <!--框-->
+                            <div>
+                                <img src="/svg/search-blue.svg" />
+                                <div>AI搜索</div>
+                                <div>实时资讯，丰富信源，整合搜索</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <img src="/svg/pen-green.svg" />
+                                <div>帮我写作</div>
+                                <div>多种体裁，润色校对，一键成文</div>
+                            </div>
                         </div>
                     </div>
                     <div>
-                        <div class="boxRight">
-                            <img src="/svg/book-red.svg" />
-                            <div>阅读总结</div>
-                            <div>论文课件，财报合同，翻译总结</div>
+                        <div>
+                            <div class="boxLeft">
+                                <img src="/svg/gallery-orange.svg" />
+                                <div>图像生成</div>
+                                <div>自定风格，搜集灵感，复制同款</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="boxRight">
+                                <img src="/svg/book-red.svg" />
+                                <div>阅读总结</div>
+                                <div>论文课件，财报合同，翻译总结</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
                     <div>
-                        <div class="boxLeft">
-                            <img src="/svg/music-purple.svg" />
-                            <div>音乐生成</div>
-                            <div>歌词定制，曲风任选，人声演唱</div>
+                        <div>
+                            <div class="boxLeft">
+                                <img src="/svg/music-purple.svg" />
+                                <div>音乐生成</div>
+                                <div>歌词定制，曲风任选，人声演唱</div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <div class="boxRight">
-                            <img src="/svg/more-grey.svg" />
-                            <div>更多</div>
-                            <div>点击展示更多功能</div>
+                        <div>
+                            <div class="boxRight">
+                                <img src="/svg/more-grey.svg" />
+                                <div>更多</div>
+                                <div>点击展示更多功能</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
         <!--聊天框-->
         <div id="chatbox">
             <!--功能按钮-->
             <div id="functionBox">
-                <div>
+                <div id="functionBox1">
                     <svg t="1727847889938" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="9415" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -497,7 +755,7 @@
                             p-id="9416"></path>
                     </svg>帮我写作
                 </div>
-                <div>
+                <div id="functionBox2">
                     <svg t="1727848019867" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="10688" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -506,7 +764,7 @@
                             p-id="10689"></path>
                     </svg>图像生成
                 </div>
-                <div>
+                <div id="functionBox3">
                     <svg t="1727847847390" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="8254" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -515,7 +773,7 @@
                             p-id="8255"></path>
                     </svg>AI搜索
                 </div>
-                <div>
+                <div id="functionBox4">
                     <svg t="1727849892646" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="13421" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -524,7 +782,7 @@
                             p-id="13422"></path>
                     </svg>阅读总结
                 </div>
-                <div>
+                <div id="functionBox5">
                     <svg t="1728039290592" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="27371" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -539,7 +797,7 @@
                             opacity=".99" p-id="27374"></path>
                     </svg>音乐生成
                 </div>
-                <div>
+                <div id="functionBox6">
                     <svg t="1728039023223" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="16980" id="mx_n_1728039023224"
                         xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
@@ -551,7 +809,7 @@
                             p-id="16982"></path>
                     </svg>解题答疑
                 </div>
-                <div>
+                <div id="functionBox7">
                     <svg t="1728039216758" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="26226" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -566,7 +824,7 @@
                             p-id="26229"></path>
                     </svg>学术搜索
                 </div>
-                <div>
+                <div id="functionBox8">
                     <svg t="1728027166276" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="9628" xmlns:xlink="http://www.w3.org/1999/xlink"
                         width="200" height="200">
@@ -579,33 +837,191 @@
             <!--输入框-->
             <div id="inputBox">
                 <div class="inputBoxLeft">
-                    <img id="uploadBtn" src="svg/clip.svg" />
+                    <img id="uploadBtn" src="/svg/clip.svg" />
                     <textarea id="typeBox" placeholder="发消息"></textarea>
                 </div>
                 <div class="inputBoxRight">
                     <div>
-                        <img id="screenshotBtn" src="svg/scissors.svg" />
-                        <img id="microphoneBtn" src="svg/microphone.svg" />
+                        <img id="screenshotBtn" src="/svg/scissors.svg" />
+                        <img id="microphoneBtn" src="/svg/microphone.svg" />
                     </div>
                     <div id="inputBoxSplit"></div>
                     <div>
-                        <img id="sendBtn" src="svg/up.svg" />
+                        <img id="sendBtn" class="sendBtnDisabled" src="/svg/up.svg" />
                     </div>
                 </div>
             </div>
         </div>
         <!--展开侧栏-->
-        <img id="sidebarUnFoldBtn" src="/svg/LeftSidebar.svg" />
+        <img id="sidebarUnFoldBtn" src="/svg/LeftSidebar-2.svg" />
+        <!--右上角头像-->
+        <img id="avatar" src="/img/user-avatar.png" />
+        <!--右上角铃铛-->
+        <img id="noticeIcon" src="/svg/bell.svg" />
     </div>
     <script>
-        document.getElementById("sidebarFoldBtn").addEventListener("click", FoldSidebar);
-        document.getElementById("sidebarUnFoldBtn").addEventListener("click", unFoldSidebar);
+
+        //侧栏子菜单
+        class sidebarMenu {
+            constructor(data, BtnID, arrowID) {
+                let Btn = document.getElementById(BtnID);
+                let el = document.createElement("div");
+                el.classList.add("sidebarData");
+                data.forEach((element, index) => {
+                    let div = document.createElement("div");
+                    div.innerHTML = "<span>" + element[0] + "</span>";
+                    div.onclick = (e) => {
+                        window.dispatchEvent(new CustomEvent("sidebarMenu_click", { detail: { Num: index, this: this } }));
+                    }
+                    el.appendChild(div);
+                });
+                if (Btn.nextSibling) Btn.parentNode.insertBefore(el, Btn.nextSibling);
+                else Btn.parentNode.appendChild(el);
+                this.data = data;
+                this.BtnID = BtnID;
+                this.BtnElement = Btn;
+                this.dataElement = el;
+                this.arrowID = arrowID;
+                this.arrowElement = document.getElementById(arrowID);
+                this.mode = "hide";
+            }
+            show() {
+                if (this.mode === "hide") {
+                    let l = this.data.length;
+                    this.dataElement.style.height = l * 37 + "px";
+                    this.arrowElement.style.transform = "rotate(90deg)";
+                    let split = document.createElement("div");
+                    split.classList.add("sidebarSplit");
+                    split.style.marginTop = "15px";
+                    this.split = split;
+                    this.dataElement.parentNode.insertBefore(split, this.dataElement.nextSibling);
+                    this.mode = "show";
+                }
+            }
+            hide() {
+                if (this.mode === "show") {
+                    this.dataElement.style.height = null;
+                    this.arrowElement.style.transform = null;
+                    this.split.parentNode.removeChild(this.split);
+                    this.mode = "hide";
+                }
+            }
+            toggle() {
+                if (this.mode === "show") this.hide();
+                else this.show();
+            }
+            refresh() {
+                while (this.dataElement.firstChild) {
+                    this.dataElement.removeChild(this.dataElement.firstChild);
+                }
+                this.data.forEach((element, index) => {
+                    let div = document.createElement("div");
+                    div.innerHTML = "<span>" + element[0] + "</span>";
+                    div.onclick = (e) => {
+                        window.dispatchEvent(new CustomEvent("sidebarMenu_click", { detail: { Num: index, this: this } }));
+                    }
+                    this.dataElement.appendChild(div);
+                });
+                this.toggle();
+                this.toggle();
+            }
+        }
+        window.sidebar = new Object();
+        sidebar.menus = new Object();
+        sidebar.menus.clearFocus = () => {
+            if (sidebar.menus.focus !== undefined) {
+                sidebar.menus.focus.style.backgroundColor = null;
+                sidebar.menus.focus.children[0].style.fontWeight = null;
+                sidebar.menus.focus.children[0].style.color = null;
+            }
+        }
+        //最近对话
+        sidebar.menus.recentDialog = new sidebarMenu([], "recentDialogBtn", "recentDialogArrow");
+        document.getElementById("recentDialogBtn").addEventListener("click", () => {
+            sidebar.menus.recentDialog.toggle();
+        });
+        //我的智能体
+        sidebar.menus.myAgents = new sidebarMenu([], "myAgentsBtn", "myAgentsArrow");
+        document.getElementById("myAgentsBtn").addEventListener("click", () => {
+            sidebar.menus.myAgents.toggle();
+        });
+        window.addEventListener("sidebarMenu_click", (e) => {
+            sidebar.menus.clearFocus();
+            sidebar.menus.focus = e.detail.this.dataElement.children[e.detail.Num];
+            sidebar.menus.focus.style.backgroundColor = "#ffffff";
+            sidebar.menus.focus.children[0].style.fontWeight = "bold";
+            sidebar.menus.focus.children[0].style.color = "#000000";
+
+            //if (e.detail.this.BtnID === "myAgentsBtn")alert("此功能尚未开发哦~");
+            if (e.detail.this.BtnID === "recentDialogBtn") {
+                centerDialog.mode = "talking";
+                centerDialog.talking = e.detail.Num;
+                console.log(e.detail.Num);
+                centerDialog.set(sidebar.menus.recentDialog.data[e.detail.Num]);
+            }
+
+
+
+        })
         document.getElementById("newDialog").addEventListener("click", () => {
-            alert("新对话按钮被点击！");
-        });
-        document.getElementById("uploadBtn").addEventListener("click", () => {
-            alert("上传按钮被点击！");
-        });
+            sidebar.menus.clearFocus();
+            centerDialog.clear();
+            centerDialog.box.show();
+            centerDialog.mode = "new";
+        })
+
+
+
+
+        //侧栏滚动与按钮固定
+        document.getElementById("sidebarFunctionList").addEventListener("scroll", (e) => {
+            let top = e.target.scrollTop;
+            let elA1 = document.getElementById("recentDialogBtn");
+            let elA2 = document.getElementById("recentDialogBtnBox");
+            let elA3 = document.getElementById("recentDialogBtnIn");
+            let elB1 = document.getElementById("myAgentsBtn");
+            let elB2 = document.getElementById("myAgentsBtnBox");
+            let elB3 = document.getElementById("myAgentsBtnIn");
+            let p = elA1.offsetTop - 123;
+            let q = elB1.offsetTop - 123;
+            if (top >= p && top < q) {
+                elA2.style.position = "absolute";
+                elA2.style.top = "117px";
+                elA2.style.backgroundColor = "var(--sidebar-bkg)";
+                elA2.style.boxShadow = "0px 5px 5px 0px var(--sidebar-bkg)";
+                elA3.style.marginBottom = "0";
+                elA2.style.zIndex = "4";
+            }
+            else {
+                elA2.style.position = null;
+                elA2.style.top = null;
+                elA2.style.backgroundColor = null;
+                elA2.style.boxShadow = null;
+                elA3.style.marginBottom = null;
+                elA2.style.zIndex = null;
+            }
+            if (top >= q) {
+                elB2.style.position = "absolute";
+                elB2.style.top = "117px";
+                elB2.style.backgroundColor = "var(--sidebar-bkg)";
+                elB2.style.boxShadow = "0px 5px 5px 0px var(--sidebar-bkg)";
+                elB3.style.marginBottom = "0";
+                elB2.style.zIndex = "4";
+            }
+            else {
+                elB2.style.position = null;
+                elB2.style.top = null;
+                elB2.style.backgroundColor = null;
+                elB2.style.boxShadow = null;
+                elB3.style.marginBottom = null;
+                elB2.style.zIndex = null;
+            }
+        })
+
+
+
+
+        //展开与收起侧栏
         function FoldSidebar() {
             document.getElementById("sidebar").style.transform = "translateX(-300px)";
             document.getElementById("main").style.left = "0";
@@ -647,6 +1063,8 @@
                 }
             }
         }
+        document.getElementById("sidebarFoldBtn").addEventListener("click", FoldSidebar);
+        document.getElementById("sidebarUnFoldBtn").addEventListener("click", unFoldSidebar);
 
         var w1 = window.innerWidth;
         if (w1 < 800) FoldSidebar();
@@ -659,6 +1077,434 @@
             }
             w1 = w;
         });
+
+        //聊天框功能按钮
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                let w = entry.contentRect.width;
+                if (w <= 780) document.getElementById("functionBox7").style.display = "none";
+                else document.getElementById("functionBox7").style.display = null;
+                if (w <= 680) document.getElementById("functionBox6").style.display = "none";
+                else document.getElementById("functionBox6").style.display = null;
+                if (w <= 580) document.getElementById("functionBox5").style.display = "none";
+                else document.getElementById("functionBox5").style.display = null;
+                if (w <= 480) document.getElementById("functionBox4").style.display = "none";
+                else document.getElementById("functionBox4").style.display = null;
+                if (w <= 380) document.getElementById("functionBox3").style.display = "none";
+                else document.getElementById("functionBox3").style.display = null;
+                if (w <= 285) document.getElementById("functionBox2").style.display = "none";
+                else document.getElementById("functionBox2").style.display = null;
+                if (w <= 185) document.getElementById("functionBox1").style.display = "none";
+                else document.getElementById("functionBox1").style.display = null;
+            }
+        });
+        observer.observe(document.getElementById("chatbox"));
+
+        //聊天框按钮悬浮文字
+        class Notice {
+            constructor(e, height, width, child, direction = "UP") {
+                let el = document.createElement("div");
+                el.classList.add("noticeBefore");
+                el.style.height = height + "px";
+                el.style.width = width + "px";
+                let left, top;
+                if (direction === "DOWN") {
+                    left = e.target.getBoundingClientRect().left - (width / 2 - 20);
+                    top = e.target.getBoundingClientRect().top + (height + 25);
+                }
+                else {
+                    left = e.target.getBoundingClientRect().left - (width / 2 - 15);
+                    top = e.target.getBoundingClientRect().top - (height + 6);
+                }
+                el.style.left = (left > 5) ? left + "px" : "5px";
+                el.style.top = (top > 5) ? top + "px" : "5px";
+                el.appendChild(child);
+                this.element = el;
+            }
+            show() {
+                document.body.appendChild(this.element);
+                setTimeout(() => {
+                    this.element.classList.add("noticeAfter");
+                }, 100);
+            }
+            hide() {
+                this.element.classList.remove("noticeAfter");
+                setTimeout(() => { this.element.parentNode.removeChild(this.element); }, 100);
+            }
+        }
+        document.getElementById("uploadBtn").addEventListener("mouseover", (e) => {
+            let ul = document.createElement("ul");
+            let li1 = document.createElement("li");
+            li1.innerText = "文件数量：最多 50 个";
+            ul.appendChild(li1);
+            let li2 = document.createElement("li");
+            li2.innerText = "文件类型：pdf、txt、csv、docx、doc、xlsx、xls、pptx、ppt、md、mobi、epub、png、jpeg、jpg";
+            ul.appendChild(li2);
+            e.target.notice = new Notice(e, 70, 240, ul);
+            e.target.notice.show();
+        })
+        document.getElementById("uploadBtn").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("screenshotBtn").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "截图提问";
+            e.target.notice = new Notice(e, 25, 65, el);
+            e.target.notice.show();
+        })
+        document.getElementById("screenshotBtn").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("microphoneBtn").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "语音输入";
+            e.target.notice = new Notice(e, 25, 65, el);
+            e.target.notice.show();
+        })
+        document.getElementById("microphoneBtn").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("sendBtn").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "发送";
+            e.target.notice = new Notice(e, 25, 35, el);
+            e.target.notice.show();
+        })
+        document.getElementById("sendBtn").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("sidebarFoldBtn").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "收起侧栏";
+            e.target.notice = new Notice(e, 25, 65, el, "DOWN");
+            e.target.notice.show();
+        })
+        document.getElementById("sidebarFoldBtn").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("sidebarUnFoldBtn").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "展开侧栏";
+            e.target.notice = new Notice(e, 25, 65, el, "DOWN");
+            e.target.notice.show();
+        })
+        document.getElementById("sidebarUnFoldBtn").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("noticeIcon").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "我的通知";
+            e.target.notice = new Notice(e, 25, 65, el, "DOWN");
+            e.target.notice.show();
+        })
+        document.getElementById("noticeIcon").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        document.getElementById("avatar").addEventListener("mouseover", (e) => {
+            let el = document.createElement("div");
+            el.style.textAlign = "center";
+            el.style.lineHeight = "25px";
+            el.innerText = "我的账号";
+            e.target.notice = new Notice(e, 25, 65, el, "DOWN");
+            e.target.notice.show();
+        })
+        document.getElementById("avatar").addEventListener("mouseout", (e) => {
+            e.target.notice.hide();
+            delete e.target.notice;
+        })
+        //输入框
+        document.getElementById("typeBox").addEventListener("input", (e) => {
+            let sendBtn = document.getElementById("sendBtn");
+            if (e.target.value !== '') {
+                sendBtn.classList.remove("sendBtnDisabled");
+                sendBtn.classList.add("sendBtnEnabled");
+            }
+            else {
+                sendBtn.classList.remove("sendBtnEnabled");
+                sendBtn.classList.add("sendBtnDisabled");
+            }
+
+        });
+        document.getElementById("sendBtn").addEventListener("click", () => {
+            if (document.getElementById("typeBox").value !== '') sendMessage();
+        })
+        document.getElementById("typeBox").addEventListener('keydown', (e) => {
+            if (e.keyCode === 13) {
+                sendMessage();
+                e.preventDefault();
+            }
+        });
+
+
+        function sendMessage() {
+            let ans = "《秋日随想》\n在这个秋意渐浓的日子里，2024 年 10 月 6 日，星期日，阳光透过树叶的缝隙洒下，带来丝丝温暖。秋天，像是一位画家，用金黄、橙红等色彩勾勒出大地的美丽画卷。树叶在风中飘落，如同舞动的蝴蝶，诉说着季节的更替。走在铺满落叶的小路上，脚下发出沙沙的声响，仿佛是大自然演奏的美妙旋律。秋天也是收获的季节，田野里金黄的稻穗低垂，果树上挂满了沉甸甸的果实。人们在这个季节里忙碌着，脸上洋溢着丰收的喜悦。秋天的宁静与美好，让人的心灵得到了片刻的安宁。在这个美好的日子里，不妨停下匆忙的脚步，去感受秋天的魅力，享受生活中的每一个美好瞬间。";
+
+            let textarea = document.getElementById("typeBox");
+            let text = textarea.value;
+            textarea.value = '';
+            sendBtn.classList.remove("sendBtnEnabled");
+            sendBtn.classList.add("sendBtnDisabled");
+            if (centerDialog.mode === "new") {
+                sidebar.menus.recentDialog.data.unshift(["新对话", ["q", text], ["a", ans]]);
+                sidebar.menus.recentDialog.refresh();
+                sidebar.menus.recentDialog.show();
+                sidebar.menus.recentDialog.dataElement.children[0].onclick();
+            }
+            else if (centerDialog.mode === "talking") {
+                sidebar.menus.recentDialog.data[centerDialog.talking].push(["q", text], ["a", ans]);
+                centerDialog.add(['', ["q", text], ["a", ans]]);
+            }
+        }
+
+        window.centerDialog = new Object();
+        centerDialog.mode = "new";
+        centerDialog.talking = 0;
+        centerDialog.add = (data) => {
+            data.forEach((element, index) => {
+                if (index >= 1) {
+                    if (element[0] === "q") {
+                        let qE = document.createElement("p");
+                        qE.style.color = "var(--chat-color)";
+                        qE.innerText = element[1];
+                        qE.style.backgroundColor = "#f5f5f5";
+                        qE.style.wordBreak = "break-all";
+                        qE.style.padding = "15px";
+                        qE.style.marginLeft = "15px";
+                        qE.style.marginRight = "15px";
+                        qE.style.borderRadius = "10px";
+                        qE.style.boxSizing = "border-box";
+                        document.getElementById("centerBox").appendChild(qE);
+                    }
+                    else if (element[0] === "a") {
+                        let aE = document.createElement("p");
+                        aE.style.color = "var(--chat-color)";
+                        aE.style.padding = "30px";
+                        aE.innerText = element[1];
+                        document.getElementById("centerBox").appendChild(aE);
+                    }
+                }
+            });
+        }
+        centerDialog.set = (data) => {
+            centerDialog.box.hide();
+            centerDialog.clear();
+            centerDialog.add(data);
+        }
+        centerDialog.clear = () => {
+            while (document.getElementById("centerBox").children[1]) {
+                document.getElementById("centerBox").removeChild(document.getElementById("centerBox").children[1]);
+            }
+        }
+        centerDialog.box = new Object();
+        centerDialog.box.show = () => {
+            document.getElementById("centerBoxDefault").style.display = null;
+        }
+        centerDialog.box.hide = () => {
+            document.getElementById("centerBoxDefault").style.display = "none";
+        }
+        //用户头像
+        document.getElementById("avatar").addEventListener("click", login);
+        function login() {
+            let parameter = { height: 300, width: 250, title: "登录", content: "<div id=\"login\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
+            window.loginI = iwindow(parameter);
+            let login = document.getElementById("login");
+            login.style.padding = "5px 20px";
+            let title = document.createElement("h1");
+            title.innerText = "登录";
+            title.style.textAlign = "center";
+            login.appendChild(title);
+            let input = document.createElement("div");
+
+            let line1 = document.createElement("div");
+            line1.style.height = "30px";
+            let line1span1 = document.createElement("span");
+            line1span1.innerText = "账号：";
+            line1span1.style.lineHeight = "30px";
+            line1.appendChild(line1span1);
+            let line1input1 = document.createElement("input");
+            line1input1.id = "username";
+            line1input1.type = "text";
+            line1input1.style.width = "150px";
+            line1.appendChild(line1input1);
+            input.appendChild(line1);
+
+            let line2 = document.createElement("div");
+            line2.style.height = "30px";
+            let line2span1 = document.createElement("span");
+            line2span1.innerText = "密码：";
+            line2span1.style.lineHeight = "30px";
+            line2.appendChild(line2span1);
+            let line2input1 = document.createElement("input");
+            line2input1.id = "password";
+            line2input1.type = "password";
+            line2input1.style.width = "150px";
+            line2.appendChild(line2input1);
+            input.appendChild(line2);
+            login.appendChild(input);
+
+            let btndiv = document.createElement("div");
+            btndiv.style.display = "flex";
+            btndiv.style.justifyContent = "center";
+            btndiv.style.paddingTop = "15px";
+            let btn = document.createElement("button");
+            btn.innerText = "登录";
+            btn.style.height = "70px";
+            btn.style.width = "150px";
+            btn.style.fontSize = "36px";
+            btn.onclick = tryLogin;
+            btndiv.appendChild(btn);
+            login.appendChild(btndiv);
+
+            let result = document.createElement("div");
+            result.style.display = "flex";
+            result.style.justifyContent = "center";
+            result.style.paddingTop = "10px";
+            result.id = "loginResult";
+            result.style.fontWeight = "bold";
+            login.appendChild(result);
+        }
+        function tryLogin() {
+            let t = event.target;
+            t.setAttribute("disabled", "true");
+            let resultElement = document.getElementById("loginResult");
+            resultElement.style.color = "black";
+            resultElement.innerText = "正在登录……";
+            let request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
+                    try {
+                        let a = JSON.parse(request.responseText);
+                        if (a.success === "true") {
+                            resultElement.style.color = "green";
+                            resultElement.innerText = "登录成功！";
+                            setTimeout(() => { iwindow_close(loginI); }, 1000);
+                        }
+                        else {
+                            resultElement.style.color = "red";
+                            resultElement.innerText = "登录失败！";
+                            t.removeAttribute("disabled");
+                        }
+                    }
+                    catch {
+                        resultElement.style.color = "red";
+                        resultElement.innerText = "发生错误！";
+                        t.removeAttribute("disabled");
+                    }
+                }
+            }
+            request.open('post', 'https://dev.mcjiaozi.com/AItalking/');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            request.send("username=" + encodeURIComponent(document.getElementById("username").value) + "&password=" + encodeURIComponent(document.getElementById("password").value));
+        }
+
+
+        //使手机方便检测触屏落点
+        document.body.addEventListener("mousemove", () => { })
+
+
+        //伪数据
+        window.dialogs = new Array();
+        dialogs[0] = ["最近对话 - 示例",
+            ["q", "问题1"],
+            ["a", "回答1"],
+            ["q", "问题2"],
+            ["a", "回答2"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"],
+            ["q", "问题"],
+            ["a", "回答"]]
+        dialogs[1] = ["诗歌问答",
+            ["q", "春江潮水连海平，海上明月共潮生。滟滟随波千万里，何处春江无月明？\n诗的标题是？"],
+            ["a", "《春江花月夜》"],
+            ["q", "诗的作者是？"],
+            ["a", "张若虚"]]
+        dialogs[2] = ["秋日感想",
+            ["q", "你有什么感想？"],
+            ["a", "《秋日随想》\n在这个秋意渐浓的日子里，2024 年 10 月 6 日，星期日，阳光透过树叶的缝隙洒下，带来丝丝温暖。秋天，像是一位画家，用金黄、橙红等色彩勾勒出大地的美丽画卷。树叶在风中飘落，如同舞动的蝴蝶，诉说着季节的更替。走在铺满落叶的小路上，脚下发出沙沙的声响，仿佛是大自然演奏的美妙旋律。秋天也是收获的季节，田野里金黄的稻穗低垂，果树上挂满了沉甸甸的果实。人们在这个季节里忙碌着，脸上洋溢着丰收的喜悦。秋天的宁静与美好，让人的心灵得到了片刻的安宁。在这个美好的日子里，不妨停下匆忙的脚步，去感受秋天的魅力，享受生活中的每一个美好瞬间。"]
+        ]
+        dialogs[3] = ["华中科技大学介绍",
+            ["q", "华中科技大学"],
+            ["a", "华中科技大学是一所非常优秀的高等院校，具有多方面的显著特点：\n" +
+                "学校历史与组成：\n" +
+                "华中科技大学由原华中理工大学、同济医科大学、武汉城市建设学院于 2000 年合并组建而成。华中理工大学的前身是 1952 年筹办的华中工学院，后经不断发展，于 1988 年更名为华中理工大学；同济医科大学前身为 1907 年德中双方创办的德文医学堂，历经多次更名和发展，成为了一所知名的医科大学；武汉城市建设学院前身为 1952 年创建的中南建筑工程学校，后经过多次变迁成为新中国第一所城市建设高等学校。\n" +
+                "学校地位：\n" +
+                "是国家教育部直属的重点综合性大学，属于国家 “211 工程” 和 “985 工程” 建设高校之一，也是首批 “双一流” 建设高校。\n" +
+                "学科建设：\n" +
+                "学科门类齐全，涵盖哲学、经济学、法学、教育学、文学、理学、工学、医学、管理学、艺术学、交叉学科等 11 大学科门类。\n" +
+                "拥有众多优势学科，截至 2023 年 12 月，有一级学科国家重点学科 7 个，二级学科国家重点学科 15 个（内科学、外科学按三级计），国家重点（培育）学科 7 个。在教育部实施的一流本科专业建设 “双万计划” 中，学校累计入选一流本科专业建设点 89 个，其中国家级一流本科专业建设点 74 个、省级一流本科专业建设点 15 个，获批工科和医科国家级一流本科专业建设点总计 42 个，位居全省第一。部分优势专业如电气工程及其自动化、新能源科学与工程、信息安全、软件工程、计算机科学与技术等都是国家级一流本科专业建设点。\n" +
+                "师资力量：\n" +
+                "截至 2023 年 12 月，学校现有专任教师 3700 余人，其中包括中国科学院院士、中国工程院院士等高层次人才，师资队伍实力雄厚。\n" +
+                "科研实力：\n" +
+                "拥有多个国家级科研平台和创新研究群体，在强场超快光学、量子传感与精密测量、光催化产过氧化氢等领域取得了一系列重要的研究进展。\n" +
+                "人才培养：\n" +
+                "学校贯彻建设 “学生、学者与学术的大学” 的教育思想，秉承 “育人为本、创新是魂、责任以行” 的办学理念，坚持 “一流教学一流本科” 的建设目标，构建和完善了充满活力的创新人才培养体系，培养出了大量的优秀人才。\n" +
+                "校园环境：\n" +
+                "校园占地 7000 余亩，绿化覆盖率 72 %，被誉为 “森林式大学”，学校的学习和生活环境优美。\n" +
+                "国际影响力：\n" +
+                "在国际上的排名不断提升，位列 2025 年 QS 世界大学排名第 300 名，2022 - 2023 年 U.S.News 全球最佳大学排名第 109 名等。\n" +
+                "总的来说，华中科技大学是一所具有深厚历史底蕴和强大综合实力的高等学府，对中国和世界的科技发展、人才培养都做出了重要的贡献。"]
+        ]
+        dialogs[4] = ["伪数据！",
+            ["q", "伪数据"],
+            ["a", "伪数据"]]
+        sidebar.menus.recentDialog.data = dialogs;
+        sidebar.menus.recentDialog.refresh();
+
+        window.myAgents = new Array();
+        myAgents = [["此功能尚未开发"], ["点击无实际作用"], ["《春江花月夜》"], ["唐 · 张若虚"], ["春江潮水连海平"], ["海上明月共潮生"], ["滟滟随波千万里"], ["何处春江无月明"], ["江流宛转绕芳甸"], ["月照花林皆似霰"], ["空里流霜不觉飞"], ["汀上白沙看不见"], ["江天一色无纤尘"], ["皎皎空中孤月轮"], ["江畔何人初见月"], ["江月何年初照人"], ["人生代代无穷已"], ["江月年年望相似"], ["不知江月待何人"], ["但见长江送流水"], ["白云一片去悠悠"], ["青枫浦上不胜愁"], ["谁家今夜扁舟子"], ["何处相思明月楼"], ["可怜楼上月裴回"], ["应照离人妆镜台"], ["玉户帘中卷不去"], ["捣衣砧上拂还来"], ["此时相望不相闻"], ["愿逐月华流照君"], ["鸿雁长飞光不度"], ["鱼龙潜跃水成文"], ["昨夜闲潭梦落花"], ["可怜春半不还家"], ["江水流春去欲尽"], ["江潭落月复西斜"], ["斜月沉沉藏海雾"], ["碣石潇湘无限路"], ["不知乘月几人归"], ["落月摇情满江树"]]
+        sidebar.menus.myAgents.data = myAgents;
+        sidebar.menus.myAgents.refresh();
     </script>
 </body>
 
