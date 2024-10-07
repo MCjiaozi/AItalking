@@ -1254,8 +1254,13 @@
         })
         document.getElementById("typeBox").addEventListener('keydown', (e) => {
             if (e.keyCode === 13) {
-                sendMessage();
-                e.preventDefault();
+                if (document.getElementById("typeBox").value === '') {
+                    e.preventDefault();
+                }
+                else {
+                    sendMessage();
+                    e.preventDefault();
+                }
             }
         });
 
@@ -1268,6 +1273,7 @@
             let token = getCookie("token");
             let textarea = document.getElementById("typeBox");
             let text = textarea.value;
+            if (text === '') return;
             textarea.value = '';
             sendBtn.classList.remove("sendBtnEnabled");
             sendBtn.classList.add("sendBtnDisabled");
