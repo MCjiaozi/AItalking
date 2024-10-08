@@ -961,7 +961,6 @@
             if (e.detail.this.BtnID === "recentDialogBtn") {
                 centerDialog.mode = "talking";
                 centerDialog.talking = e.detail.Num;
-                console.log(e.detail.Num);
                 centerDialog.set(sidebar.menus.recentDialog.data[e.detail.Num]);
             }
 
@@ -1292,25 +1291,55 @@
             document.getElementById("typeBox").setAttribute("disabled", "true");
             document.getElementById("typeBox").style.backgroundColor = "#ffffff";
             centerDialog.mode = "answering";
-            requestMsg("mode=postMsg&msg=" + text + "&token=" + token, (chat_id) => {
-                window.checkMsgInterval = setInterval(() => {
-                    requestMsg("mode=ckeckMsg&chat_id=" + chat_id + "&token=" + token, (status) => {
-                        if (status === "completed") {
-                            requestMsg("mode=getMsg&chat_id=" + chat_id + "&token=" + token, (result) => {
-                                clearInterval(checkMsgInterval);
-                                if (centerDialog.mode === "answering") {
-                                    centerDialog.mode = "talking";
-                                    sidebar.menus.recentDialog.data[centerDialog.talking].push(["a", result]);
-                                    centerDialog.add(['', ["a", result]]);
-                                    document.getElementById("typeBox").value = "";
-                                    document.getElementById("typeBox").placeholder = "发消息";
-                                    document.getElementById("typeBox").style.backgroundColor = null;
-                                    document.getElementById("typeBox").removeAttribute("disabled");
+
+            requestMsg(JSON.stringify({ mode: "postMsg", msg: text, token: token }), (json1) => {
+                try {
+                    let res1 = JSON.parse(json1);
+                    if (res1.status === true) {
+                        let chat_id = res1.detail;
+                        window.checkMsgInterval = setInterval(() => {
+                            requestMsg(JSON.stringify({ mode: "ckeckMsg", chat_id: chat_id, token: token }), (json2) => {
+                                try {
+                                    let res2 = JSON.parse(json2);
+                                    if (res2.status === true) {
+                                        let status = res2.detail;
+                                        if (status === "completed") {
+                                            requestMsg(JSON.stringify({ mode: "getMsg", chat_id: chat_id, token: token }), (json3) => {
+                                                try {
+                                                    let res3 = JSON.parse(json3);
+                                                    if (res3.status === true) {
+                                                        clearInterval(checkMsgInterval);
+                                                        let result = res3.detail;
+                                                        if (centerDialog.mode === "answering") {
+                                                            saySth(result);
+                                                        }
+                                                    }
+                                                    else {
+                                                        saySth("生成失败(06)\n" + res3.reason);
+                                                    }
+                                                } catch {
+                                                    saySth("生成失败(05)：请求错误。");
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else {
+                                        saySth("生成失败(04)：\n" + res2.reason);
+                                    }
+                                }
+                                catch {
+                                    saySth("生成失败(03)：请求错误。");
                                 }
                             });
-                        }
-                    });
-                }, 500);
+                        }, 500);
+                    }
+                    else {
+                        saySth("生成失败(02)：\n" + res1.reason);
+                    }
+                }
+                catch {
+                    saySth("生成失败(01)：请求错误。");
+                }
             });
         }
 
@@ -1319,15 +1348,25 @@
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
                     let result = request.responseText;
-                    console.log(result);
                     callback(result);
+                }
+                else if (request.readyState == 4 && !(request.status == 200 || request.status == 304)) {
+                    saySth("生成失败：网络错误。");
                 }
             }
             request.open('post', 'https://dev.mcjiaozi.com/AItalking/request/');
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             request.send(data);
         }
-
+        function saySth(sth) {
+            centerDialog.mode = "talking";
+            sidebar.menus.recentDialog.data[centerDialog.talking].push(["a", sth]);
+            centerDialog.add(['', ["a", sth]]);
+            document.getElementById("typeBox").value = "";
+            document.getElementById("typeBox").placeholder = "发消息";
+            document.getElementById("typeBox").style.backgroundColor = null;
+            document.getElementById("typeBox").removeAttribute("disabled");
+        }
 
 
         window.centerDialog = new Object();
@@ -1397,7 +1436,7 @@
                 return;
             }
             if (document.getElementById("login") !== null) return;
-            let parameter = { height: 300, width: 250, title: "登录", content: "<div id=\"login\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
+            let parameter = { height: 350, width: 250, title: "登录", content: "<div id=\"login\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 420) ? 1 : 2, y: 70, mask: true };
             window.loginI = iwindow(parameter);
             let login = document.getElementById("login");
             login.style.padding = "5px 20px";
@@ -1410,26 +1449,26 @@
             let line1 = document.createElement("div");
             line1.style.height = "30px";
             let line1span1 = document.createElement("span");
-            line1span1.innerText = "账号：";
+            line1span1.innerText = "用户名：";
             line1span1.style.lineHeight = "30px";
             line1.appendChild(line1span1);
             let line1input1 = document.createElement("input");
             line1input1.id = "username";
             line1input1.type = "text";
-            line1input1.style.width = "150px";
+            line1input1.style.width = "130px";
             line1.appendChild(line1input1);
             input.appendChild(line1);
 
             let line2 = document.createElement("div");
             line2.style.height = "30px";
             let line2span1 = document.createElement("span");
-            line2span1.innerText = "密码：";
+            line2span1.innerHTML = "密&emsp;码：";
             line2span1.style.lineHeight = "30px";
             line2.appendChild(line2span1);
             let line2input1 = document.createElement("input");
             line2input1.id = "password";
             line2input1.type = "password";
-            line2input1.style.width = "150px";
+            line2input1.style.width = "130px";
             line2.appendChild(line2input1);
             input.appendChild(line2);
             login.appendChild(input);
@@ -1446,6 +1485,15 @@
             btn.onclick = tryLogin;
             btndiv.appendChild(btn);
             login.appendChild(btndiv);
+
+            let toReg = document.createElement("div");
+            toReg.style.display = "flex";
+            toReg.style.justifyContent = "center";
+            toReg.style.paddingTop = "10px";
+            toReg.id = "logintoReg";
+            toReg.innerHTML = "<a onclick='findpwd();' href='javascript:void(0);'><b>找回密码</b></a>&nbsp;|&nbsp;<a onclick='register();' href='javascript:void(0);'><b>立即注册</b></a>"
+            toReg.style.fontWeight = "bold";
+            login.appendChild(toReg);
 
             let result = document.createElement("div");
             result.style.display = "flex";
@@ -1466,31 +1514,39 @@
                 if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
                     try {
                         let a = JSON.parse(request.responseText);
-                        if (a.success === "true") {
+                        if (a.status === true) {
                             resultElement.style.color = "green";
                             resultElement.innerText = "登录成功！";
-                            setCookie("token", a.token, 7, "/");
+                            setCookie("token", a.detail.token, 7, "/");
                             setTimeout(() => { iwindow_close(loginI); }, 1000);
                         }
                         else {
                             resultElement.style.color = "red";
-                            resultElement.innerText = "登录失败！";
+                            if (a.reason === undefined) resultElement.innerHTML = "登录失败！";
+                            else resultElement.innerHTML = "登录失败！<br>" + a.reason;
                             t.removeAttribute("disabled");
                         }
                     }
                     catch {
                         resultElement.style.color = "red";
-                        resultElement.innerText = "发生错误！";
+                        resultElement.innerText = "服务器响应错误！";
                         t.removeAttribute("disabled");
                     }
+                }
+                else if (request.readyState == 4 && !(request.status == 200 || request.status == 304)) {
+                    resultElement.style.color = "red";
+                    resultElement.innerText = "网络或服务器错误！";
+                    t.removeAttribute("disabled");
                 }
             }
             request.open('post', 'https://dev.mcjiaozi.com/AItalking/login/');
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            request.send("username=" + encodeURIComponent(document.getElementById("username").value) + "&password=" + encodeURIComponent(document.getElementById("password").value));
+            let obj = { username: document.getElementById("username").value, password: document.getElementById("password").value };
+            request.send(JSON.stringify(obj));
         }
         function logout() {
-            let parameter = { height: 300, width: 250, title: "注销", content: "<div id=\"logout\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
+            if (document.getElementById("logout") !== null) return;
+            let parameter = { height: 350, width: 250, title: "注销", content: "<div id=\"logout\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 420) ? 1 : 2, y: 70, mask: true };
             window.logoutI = iwindow(parameter);
             let logout = document.getElementById("logout");
             logout.style.padding = "5px 20px";
@@ -1517,6 +1573,15 @@
             btndiv.appendChild(btn);
             logout.appendChild(btndiv);
 
+            let toLogoutAll = document.createElement("div");
+            toLogoutAll.style.display = "flex";
+            toLogoutAll.style.justifyContent = "center";
+            toLogoutAll.style.paddingTop = "10px";
+            toLogoutAll.id = "toLogoutAll";
+            toLogoutAll.innerHTML = "<a onclick='tryLogoutAll();' href='javascript:void(0);'><b>点此以在所有设备上注销</b></a>。"
+            toLogoutAll.style.fontWeight = "bold";
+            logout.appendChild(toLogoutAll);
+
             let result = document.createElement("div");
             result.style.display = "flex";
             result.style.justifyContent = "center";
@@ -1535,6 +1600,280 @@
             resultElement.style.color = "green";
             resultElement.innerText = "您已注销！";
             setTimeout(() => { iwindow_close(logoutI); }, 1000);
+        }
+        function tryLogoutAll() {
+            let resultElement = document.getElementById("logoutResult");
+            resultElement.style.color = "black";
+            resultElement.innerText = "正在注销……";
+
+            let request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
+                    try {
+                        let a = JSON.parse(request.responseText);
+                        if (a.status === true) {
+                            resultElement.style.color = "green";
+                            resultElement.innerText = "注销成功！";
+                            setCookie("token", "");
+                            setTimeout(() => { iwindow_close(logoutI); }, 1000);
+                        }
+                        else {
+                            resultElement.style.color = "red";
+                            if (a.reason === undefined) resultElement.innerHTML = "注销失败！";
+                            else resultElement.innerHTML = "注销失败！<br>" + a.reason;
+                        }
+                    }
+                    catch {
+                        resultElement.style.color = "red";
+                        resultElement.innerText = "服务器响应错误！";
+                    }
+                }
+                else if (request.readyState == 4 && !(request.status == 200 || request.status == 304)) {
+                    resultElement.style.color = "red";
+                    resultElement.innerText = "网络或服务器错误！";
+                }
+            }
+            request.open('post', 'https://dev.mcjiaozi.com/AItalking/login/');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            let token = getCookie("token");
+            let obj = { logout: "all", token: token };
+            request.send(JSON.stringify(obj));
+        }
+        function register() {
+            if (document.getElementById("register") !== null) return;
+            let parameter = { height: 350, width: 250, title: "注册", content: "<div id=\"register\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 420) ? 1 : 2, y: 70, mask: true };
+            window.registerI = iwindow(parameter);
+            let register = document.getElementById("register");
+            register.style.padding = "5px 20px";
+            let title = document.createElement("h1");
+            title.innerText = "注册";
+            title.style.textAlign = "center";
+            register.appendChild(title);
+            let input = document.createElement("div");
+
+            let line1 = document.createElement("div");
+            line1.style.height = "30px";
+            let line1span1 = document.createElement("span");
+            line1span1.innerText = "用户名：";
+            line1span1.style.lineHeight = "30px";
+            line1.appendChild(line1span1);
+            let line1input1 = document.createElement("input");
+            line1input1.id = "r_username";
+            line1input1.type = "text";
+            line1input1.style.width = "130px";
+            line1.appendChild(line1input1);
+            input.appendChild(line1);
+
+            let line2 = document.createElement("div");
+            line2.style.height = "30px";
+            let line2span1 = document.createElement("span");
+            line2span1.innerHTML = "邮&emsp;箱：";
+            line2span1.style.lineHeight = "30px";
+            line2.appendChild(line2span1);
+            let line2input1 = document.createElement("input");
+            line2input1.id = "r_mail";
+            line2input1.type = "text";
+            line2input1.style.width = "130px";
+            line2.appendChild(line2input1);
+            input.appendChild(line2);
+            register.appendChild(input);
+
+            let line3 = document.createElement("div");
+            line3.style.height = "30px";
+            let line3span1 = document.createElement("span");
+            line3span1.innerHTML = "密&emsp;码：";
+            line3span1.style.lineHeight = "30px";
+            line3.appendChild(line3span1);
+            let line3input1 = document.createElement("input");
+            line3input1.id = "r_password";
+            line3input1.type = "password";
+            line3input1.style.width = "130px";
+            line3.appendChild(line3input1);
+            input.appendChild(line3);
+            register.appendChild(input);
+
+            let btndiv = document.createElement("div");
+            btndiv.style.display = "flex";
+            btndiv.style.justifyContent = "center";
+            btndiv.style.paddingTop = "15px";
+            let btn = document.createElement("button");
+            btn.innerText = "注册";
+            btn.style.height = "70px";
+            btn.style.width = "150px";
+            btn.style.fontSize = "36px";
+            btn.onclick = tryRegister;
+            btndiv.appendChild(btn);
+            register.appendChild(btndiv);
+
+            let result = document.createElement("div");
+            result.style.display = "flex";
+            result.style.justifyContent = "center";
+            result.style.paddingTop = "10px";
+            result.id = "registerResult";
+            result.innerText = "*您的密码将被加密存储";
+            result.style.fontWeight = "bold";
+            register.appendChild(result);
+        }
+        function tryRegister() {
+            let t = event.target;
+            t.setAttribute("disabled", "true");
+            let resultElement = document.getElementById("registerResult");
+            resultElement.style.color = "black";
+            resultElement.innerText = "正在注册……";
+            let request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
+                    try {
+                        let a = JSON.parse(request.responseText);
+                        if (a.status === true) {
+                            resultElement.style.color = "green";
+                            resultElement.innerText = "注册确认邮件已发送至您的邮箱，请前往您的邮箱确认。";
+                            t.removeAttribute("disabled");
+                        }
+                        else {
+                            resultElement.style.color = "red";
+                            if (a.reason === undefined) resultElement.innerHTML = "注册失败！";
+                            else resultElement.innerHTML = "注册失败！<br>" + a.reason;
+                            t.removeAttribute("disabled");
+                        }
+                    }
+                    catch {
+                        resultElement.style.color = "red";
+                        resultElement.innerText = "服务器响应错误！";
+                        t.removeAttribute("disabled");
+                    }
+                }
+                else if (request.readyState == 4 && !(request.status == 200 || request.status == 304)) {
+                    resultElement.style.color = "red";
+                    resultElement.innerText = "网络或服务器错误！";
+                    t.removeAttribute("disabled");
+                }
+            }
+            request.open('post', 'https://dev.mcjiaozi.com/AItalking/register/');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            let r_username = document.getElementById("r_username").value;
+            let r_mail = document.getElementById("r_mail").value;
+            let r_password = document.getElementById("r_password").value;
+            let obj = { mode: "register", username: r_username, mail: r_mail, password: r_password };
+            request.send(JSON.stringify(obj));
+        }
+        function findpwd() {
+            if (document.getElementById("findpwd") !== null) return;
+            let parameter = { height: 350, width: 250, title: "找回密码", content: "<div id=\"findpwd\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 420) ? 1 : 2, y: 70, mask: true };
+            window.findpwdI = iwindow(parameter);
+            let findpwd = document.getElementById("findpwd");
+            findpwd.style.padding = "5px 20px";
+            let title = document.createElement("h1");
+            title.innerText = "找回密码";
+            title.style.textAlign = "center";
+            findpwd.appendChild(title);
+            let input = document.createElement("div");
+
+            let line1 = document.createElement("div");
+            line1.style.height = "30px";
+            let line1span1 = document.createElement("span");
+            line1span1.innerText = "用户名：";
+            line1span1.style.lineHeight = "30px";
+            line1.appendChild(line1span1);
+            let line1input1 = document.createElement("input");
+            line1input1.id = "f_username";
+            line1input1.type = "text";
+            line1input1.style.width = "130px";
+            line1.appendChild(line1input1);
+            input.appendChild(line1);
+
+            let line2 = document.createElement("div");
+            line2.style.height = "30px";
+            let line2span1 = document.createElement("span");
+            line2span1.innerHTML = "邮&emsp;箱：";
+            line2span1.style.lineHeight = "30px";
+            line2.appendChild(line2span1);
+            let line2input1 = document.createElement("input");
+            line2input1.id = "f_mail";
+            line2input1.type = "text";
+            line2input1.style.width = "130px";
+            line2.appendChild(line2input1);
+            input.appendChild(line2);
+            findpwd.appendChild(input);
+
+            let line3 = document.createElement("div");
+            line3.style.height = "30px";
+            let line3span1 = document.createElement("span");
+            line3span1.innerHTML = "新密码：";
+            line3span1.style.lineHeight = "30px";
+            line3.appendChild(line3span1);
+            let line3input1 = document.createElement("input");
+            line3input1.id = "f_password";
+            line3input1.type = "password";
+            line3input1.style.width = "130px";
+            line3.appendChild(line3input1);
+            input.appendChild(line3);
+            findpwd.appendChild(input);
+
+            let btndiv = document.createElement("div");
+            btndiv.style.display = "flex";
+            btndiv.style.justifyContent = "center";
+            btndiv.style.paddingTop = "15px";
+            let btn = document.createElement("button");
+            btn.innerText = "提交";
+            btn.style.height = "70px";
+            btn.style.width = "150px";
+            btn.style.fontSize = "36px";
+            btn.onclick = tryFindpwd;
+            btndiv.appendChild(btn);
+            findpwd.appendChild(btndiv);
+
+            let result = document.createElement("div");
+            result.style.display = "flex";
+            result.style.justifyContent = "center";
+            result.style.paddingTop = "10px";
+            result.id = "findpwdResult";
+            result.innerText = "*请确保用户名与邮箱对应，若忘记用户名或邮箱，请联系管理员。";
+            result.style.fontWeight = "bold";
+            findpwd.appendChild(result);
+        }
+        function tryFindpwd() {
+            let t = event.target;
+            t.setAttribute("disabled", "true");
+            let resultElement = document.getElementById("findpwdResult");
+            resultElement.style.color = "black";
+            resultElement.innerText = "正在找回……";
+            let request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && (request.status == 200 || request.status == 304)) {
+                    try {
+                        let a = JSON.parse(request.responseText);
+                        if (a.status === true) {
+                            resultElement.style.color = "green";
+                            resultElement.innerText = "找回密码邮件已发送至您的邮箱，请前往您的邮箱确认。";
+                            t.removeAttribute("disabled");
+                        }
+                        else {
+                            resultElement.style.color = "red";
+                            if (a.reason === undefined) resultElement.innerHTML = "找回失败！";
+                            else resultElement.innerHTML = "找回失败！<br>" + a.reason;
+                            t.removeAttribute("disabled");
+                        }
+                    }
+                    catch {
+                        resultElement.style.color = "red";
+                        resultElement.innerText = "服务器响应错误！";
+                        t.removeAttribute("disabled");
+                    }
+                }
+                else if (request.readyState == 4 && !(request.status == 200 || request.status == 304)) {
+                    resultElement.style.color = "red";
+                    resultElement.innerText = "网络或服务器错误！";
+                    t.removeAttribute("disabled");
+                }
+            }
+            request.open('post', 'https://dev.mcjiaozi.com/AItalking/register/');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            let f_username = document.getElementById("f_username").value;
+            let f_password = document.getElementById("f_password").value;
+            let f_mail = document.getElementById("f_mail").value;
+            let obj = { mode: "findpwd", username: f_username, mail: f_mail, password: f_password };
+            request.send(JSON.stringify(obj));
         }
         function setCookie(name, value, days, path) {
             var expires = "";
