@@ -1396,6 +1396,7 @@
                 logout();
                 return;
             }
+            if (document.getElementById("login") !== null) return;
             let parameter = { height: 300, width: 250, title: "登录", content: "<div id=\"login\"></div>", mode: 3, size: (window.innerWidth >= 350 && window.innerHeight >= 370) ? 1 : 2, y: 70, mask: true };
             window.loginI = iwindow(parameter);
             let login = document.getElementById("login");
